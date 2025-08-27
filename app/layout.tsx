@@ -3,7 +3,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
-import { Providers } from './providers'; // Правильный импорт
+import { Providers } from './providers';
 import { geistSans, geistMono } from './fonts';
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-geist-sans antialiased" suppressHydrationWarning>
-        <Providers>{children}</Providers> // Правильное использование
+        <Providers>{children}</Providers> {/* Right using */}
       </body>
     </html>
   );
