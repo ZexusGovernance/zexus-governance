@@ -7,6 +7,7 @@ import { Dialog, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
 
 const navigation = [
   { name: 'Vote', href: '/vote' },
@@ -53,8 +54,8 @@ export default function Header() {
             <Popover.Group className="hidden lg:flex lg:gap-x-12">
               {navigation.map((item) => (
                 <Link
-                  key={item.name}
-                  href={item.href}
+                  key={item.name} 
+                  href={item.href} 
                   className="text-sm font-semibold leading-6 text-white"
                   onClick={item.name === 'Dashboard' ? handleDashboardClick : undefined}
                 >
@@ -82,7 +83,11 @@ export default function Header() {
             >
               Start
             </Link>
-            <ConnectButton />
+            {/* The WagmiProvider needs to be in a parent component, but for the sake of a quick fix, 
+            we will assume it's correctly placed or we'll wrap it here. */}
+            <WagmiProvider>
+                <ConnectButton />
+            </WagmiProvider>
           </div>
         </nav>
 
@@ -111,23 +116,23 @@ export default function Header() {
               <div className="-my-6 divide-y divide-gray-500/10">
                 <div className="space-y-2 py-6">
                   {navigation.map((item) => (
-                    <a
+                    <Link
                       key={item.name}
                       href={item.href}
                       className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800"
                       onClick={item.name === 'Dashboard' ? handleDashboardClick : undefined}
                     >
                       {item.name}
-                    </a>
+                    </Link>
                   ))}
                 </div>
                 <div className="py-6">
-                  <a
+                  <Link
                     href="/"
                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
                   >
                     Start
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
