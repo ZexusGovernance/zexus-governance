@@ -1,3 +1,5 @@
+// zexus-governance/app/layout.tsx
+
 import type { Metadata } from 'next';
 import './globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -19,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="font-geist-sans antialiased">
+      <body className="font-geist-sans antialiased" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

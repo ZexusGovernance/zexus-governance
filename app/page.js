@@ -12,7 +12,7 @@ const stories = [
   {
     date: '25.08.2025',
     title: 'Github Creation',
-    description: 'The Zexus project has been published on Github to ensure transparency.'
+    description: "The Zexus project has been published on Github to ensure transparency."
   },
   {
     date: '20.08.2025',
