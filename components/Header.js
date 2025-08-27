@@ -37,29 +37,29 @@ export default function Header() {
       <header className="py-4">
         <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
           <div className="flex lg:flex-1 items-center gap-x-4">
-            <a href="#" className="-m-1.5 p-1.5 flex items-center gap-x-2">
+            <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-x-2">
               <span className="sr-only">Zexus Governance</span>
               <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="" />
               <div className="flex items-center">
-                <a href="#" className="text-2xl font-bold text-white">
+                <span className="text-2xl font-bold text-white">
                   Zexus Governance
-                </a>
+                </span>
                 <span className="ml-2 text-xs font-semibold text-gray-400">Beta v1.0.0</span>
               </div>
-            </a>
+            </Link>
           </div>
           
           {isClient && (
             <Popover.Group className="hidden lg:flex lg:gap-x-12">
               {navigation.map((item) => (
-                <a 
-                  key={item.name} 
-                  href={item.href} 
+                <Link
+                  key={item.name}
+                  href={item.href}
                   className="text-sm font-semibold leading-6 text-white"
                   onClick={item.name === 'Dashboard' ? handleDashboardClick : undefined}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </Popover.Group>
           )}
@@ -75,25 +75,29 @@ export default function Header() {
             </button>
           </div>
 
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="#" className="text-sm font-semibold leading-6 text-white">
-              Start <span aria-hidden="true">→</span>
-            </a>
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
+            <Link 
+              href="/"
+              className="rounded-md bg-[#B58C5A] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm ring-2 ring-[#B58C5A] hover:bg-[#A37B4D] hover:ring-[#A37B4D] hover:shadow-[0_0_25px_rgba(181,140,90,0.8)] transition-all duration-300"
+            >
+              Start
+            </Link>
+            <ConnectButton />
           </div>
         </nav>
 
         <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
           <div className="fixed inset-0 z-50" />
-          <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-black/80 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
+          <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-950 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
             <div className="flex items-center justify-between">
-              <a href="#" className="-m-1.5 p-1.5">
+              <Link href="/" className="-m-1.5 p-1.5">
                 <span className="sr-only">Zexus Governance</span>
                 <img
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                   alt=""
                 />
-              </a>
+              </Link>
               <button
                 type="button"
                 className="-m-2.5 rounded-md p-2.5 text-white"
