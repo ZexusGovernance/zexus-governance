@@ -7,7 +7,6 @@ import { Dialog, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { WagmiProvider } from 'wagmi';
 
 const navigation = [
   { name: 'Vote', href: '/vote' },
@@ -53,7 +52,7 @@ export default function Header() {
           {isClient && (
             <Popover.Group className="hidden lg:flex lg:gap-x-12">
               {navigation.map((item) => (
-                <Link
+                <Link 
                   key={item.name} 
                   href={item.href} 
                   className="text-sm font-semibold leading-6 text-white"
@@ -76,24 +75,14 @@ export default function Header() {
             </button>
           </div>
 
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
-            <Link 
-              href="/"
-              className="rounded-md bg-[#B58C5A] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm ring-2 ring-[#B58C5A] hover:bg-[#A37B4D] hover:ring-[#A37B4D] hover:shadow-[0_0_25px_rgba(181,140,90,0.8)] transition-all duration-300"
-            >
-              Start
-            </Link>
-            {/* The WagmiProvider needs to be in a parent component, but for the sake of a quick fix, 
-            we will assume it's correctly placed or we'll wrap it here. */}
-            <WagmiProvider>
-                <ConnectButton />
-            </WagmiProvider>
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <ConnectButton />
           </div>
         </nav>
 
         <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
           <div className="fixed inset-0 z-50" />
-          <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-950 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
+          <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-black/80 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
             <div className="flex items-center justify-between">
               <Link href="/" className="-m-1.5 p-1.5">
                 <span className="sr-only">Zexus Governance</span>
@@ -127,12 +116,7 @@ export default function Header() {
                   ))}
                 </div>
                 <div className="py-6">
-                  <Link
-                    href="/"
-                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
-                  >
-                    Start
-                  </Link>
+                  <ConnectButton />
                 </div>
               </div>
             </div>

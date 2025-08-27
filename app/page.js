@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import HeroCanvas from '@/components/HeroCanvas'; 
 import { SparklesIcon, ShareIcon, ChartBarIcon } from '@heroicons/react/24/solid';
 import Header from '@/components/Header';
-import Link from 'next/link';
+import Link from 'next/link'; // <-- ВАЖНО: Добавляем импорт Link
 
 // Array with data for the Governance Stories section (newest events at the top)
 const stories = [
