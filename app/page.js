@@ -1,31 +1,33 @@
 // zexus-governance/app/page.js
 
-'use client'; // <-- ЭТА СТРОКА ОЧЕНЬ ВАЖНА, ТАК КАК МЫ ИСПОЛЬЗУЕМ СОСТОЯНИЕ (useState)
-import { useState, useEffect } from 'react';
+'use client'; 
+import { useState } from 'react';
 import HeroCanvas from '@/components/HeroCanvas'; 
-import { SparklesIcon, ShareIcon, ChartBarIcon } from '@heroicons/react/24/solid';
+import { SparklesIcon } from '@heroicons/react/24/solid';
 import Header from '@/components/Header';
-import Link from 'next/link'; // <-- ВАЖНО: Добавляем импорт Link
+import Link from 'next/link'; 
 
 // Array with data for the Governance Stories section (newest events at the top)
 const stories = [
   {
     date: '25.08.2025',
+    iso: '2025-08-25',
     title: 'Github Creation',
     description: "The Zexus project has been published on Github to ensure transparency."
   },
   {
     date: '20.08.2025',
+    iso: '2025-08-20',
     title: 'Token Delegation',
     description: '2M tokens $TRUMPWINNER have been delegated to the Zexus treasury.'
   },
   {
     date: '20.08.2025',
+    iso: '2025-08-20',
     title: 'Project Foundation',
     description: 'Official launch of Zexus Governance.'
   },
 ];
-
 
 export default function Home() {
   const [notification, setNotification] = useState({ message: '', type: '' });
@@ -38,7 +40,7 @@ export default function Home() {
   };
 
   const handleExploreClick = (event) => {
-    event.preventDefault(); // Prevent the default link behavior
+    event.preventDefault();
     showNotification('Platform is temporarily unavailable', 'error');
   };
 
@@ -74,9 +76,12 @@ export default function Home() {
             >
               Explore Now
             </Link>
-            <a href="#" onClick={handleExploreClick} className="text-sm font-semibold leading-6 text-white hover:text-gray-300 transition-colors">
+            <button 
+              onClick={handleExploreClick} 
+              className="text-sm font-semibold leading-6 text-white hover:text-gray-300 transition-colors"
+            >
               Explore Ecosystems <span aria-hidden="true">→</span>
-            </a>
+            </button>
           </div>
         </div>
         
@@ -93,21 +98,6 @@ export default function Home() {
               <span>CoinPaprika</span> &nbsp; &middot; &nbsp; 
               <span>DexScreener</span> &nbsp; &middot; &nbsp; 
               <span>LiveCoinWatch</span> &nbsp; &middot; &nbsp;
-              <span>TRUMPWINNER</span> &nbsp; &middot; &nbsp; 
-              <span>OKX WALLET</span> &nbsp; &middot; &nbsp; 
-              <span>CoinPaprika</span> &nbsp; &middot; &nbsp; 
-              <span>DexScreener</span> &nbsp; &middot; &nbsp; 
-              <span>LiveCoinWatch</span> &nbsp; &middot; &nbsp;
-              <span>TRUMPWINNER</span> &nbsp; &middot; &nbsp; 
-              <span>OKX WALLET</span> &nbsp; &middot; &nbsp; 
-              <span>CoinPaprika</span> &nbsp; &middot; &nbsp; 
-              <span>DexScreener</span> &nbsp; &middot; &nbsp; 
-              <span>LiveCoinWatch</span> &nbsp; &middot; &nbsp;
-              <span>TRUMPWINNER</span> &nbsp; &middot; &nbsp; 
-              <span>OKX WALLET</span> &nbsp; &middot; &nbsp; 
-              <span>CoinPaprika</span> &nbsp; &middot; &nbsp; 
-              <span>DexScreener</span> &nbsp; &middot; &nbsp; 
-              <span>LiveCoinWatch</span> &nbsp; &middot; &nbsp;
             </div>
           </div>
         </section>
@@ -117,7 +107,7 @@ export default function Home() {
       <div className="relative z-20 h-24 bg-gradient-to-b from-transparent to-[#0A0A0A]"></div>
 
       {/* "How Zexus Works" section */}
-      <section id="features" className="relative z-20 mt-[-12]">
+      <section id="features" className="relative z-20 -mt-12">
         <div className="bg-[#0A0A0A] py-24 sm:py-32">
           <div className="container mx-auto px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
@@ -129,55 +119,52 @@ export default function Home() {
               </p>
             </div>
             
-            {/* Flowchart with new "glassmorphism" design */}
+            {/* Flowchart */}
             <div className="mx-auto mt-16 max-w-none text-base leading-7 text-gray-300">
               <div className="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-y-0 lg:space-x-8">
-                {/* Step 1: Project N transfers tokens */}
-                <div className="relative flex flex-col items-center text-center p-6 rounded-2xl shadow-xl w-full lg:w-1/3 overflow-hidden bg-white/5 border border-gray-700/50 backdrop-filter backdrop-blur-sm">
-                    {/* Glow effect on hover */}
-                    <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 hover:opacity-100" style={{ backgroundImage: 'radial-gradient(ellipse at center, rgba(181, 140, 90, 0.4) 0%, transparent 70%)' }}></div>
-                    <div className="relative z-10 flex flex-col items-center">
-                        <div className="text-xl font-semibold text-white">Project N</div>
-                        <div className="mt-2 text-gray-400">
-                          transfers tokens for Zexus to manage.
-                        </div>
+                {/* Step 1 */}
+                <div className="relative flex flex-col items-center text-center p-6 rounded-2xl shadow-xl w-full lg:w-1/3 overflow-hidden bg-white/5 border border-gray-700/50 backdrop-blur-sm">
+                  <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 hover:opacity-100" style={{ backgroundImage: 'radial-gradient(ellipse at center, rgba(181, 140, 90, 0.4) 0%, transparent 70%)' }}></div>
+                  <div className="relative z-10 flex flex-col items-center">
+                    <div className="text-xl font-semibold text-white">Project N</div>
+                    <div className="mt-2 text-gray-400">
+                      transfers tokens for Zexus to manage.
                     </div>
+                  </div>
                 </div>
 
                 {/* Arrow */}
-                <svg className="w-10 h-10 text-[#B58C5A] rotate-90 lg:rotate-0" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-10 h-10 text-[#B58C5A] rotate-90 lg:rotate-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M14.59 18.001L15.3 17.291L20.8 12.001L15.3 6.71104L14.59 6.00104L13.88 6.71104L19.38 12.001L13.88 17.291L14.59 18.001Z" />
                   <path d="M5.59003 18.001L6.30003 17.291L11.8 12.001L6.30003 6.71104L5.59003 6.00104L4.88003 6.71104L10.38 12.001L4.88003 17.291L5.59003 18.001Z" />
                 </svg>
 
-                {/* Step 2: Zexus receives N tokens and transfers ZEX */}
-                <div className="relative flex flex-col items-center text-center p-6 rounded-2xl shadow-xl w-full lg:w-1/3 overflow-hidden bg-white/5 border border-gray-700/50 backdrop-filter backdrop-blur-sm">
-                    {/* Glow effect on hover */}
-                    <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 hover:opacity-100" style={{ backgroundImage: 'radial-gradient(ellipse at center, rgba(181, 140, 90, 0.4) 0%, transparent 70%)' }}></div>
-                    <div className="relative z-10 flex flex-col items-center">
-                        <div className="text-xl font-semibold text-white">Zexus Governance</div>
-                        <div className="mt-2 text-gray-400">
-                          Receives Project N tokens and transfers 5% $ZEX in return.
-                        </div>
+                {/* Step 2 */}
+                <div className="relative flex flex-col items-center text-center p-6 rounded-2xl shadow-xl w-full lg:w-1/3 overflow-hidden bg-white/5 border border-gray-700/50 backdrop-blur-sm">
+                  <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 hover:opacity-100" style={{ backgroundImage: 'radial-gradient(ellipse at center, rgba(181, 140, 90, 0.4) 0%, transparent 70%)' }}></div>
+                  <div className="relative z-10 flex flex-col items-center">
+                    <div className="text-xl font-semibold text-white">Zexus Governance</div>
+                    <div className="mt-2 text-gray-400">
+                      Receives Project N tokens and transfers 5% $ZEX in return.
                     </div>
+                  </div>
                 </div>
 
                 {/* Arrow */}
-                <svg className="w-10 h-10 text-[#B58C5A] rotate-90 lg:rotate-0" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-10 h-10 text-[#B58C5A] rotate-90 lg:rotate-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M14.59 18.001L15.3 17.291L20.8 12.001L15.3 6.71104L14.59 6.00104L13.88 6.71104L19.38 12.001L13.88 17.291L14.59 18.001Z" />
                   <path d="M5.59003 18.001L6.30003 17.291L11.8 12.001L6.30003 6.71104L5.59003 6.00104L4.88003 6.71104L10.38 12.001L4.88003 17.291L5.59003 18.001Z" />
                 </svg>
 
-                {/* Step 3: Zexus distributes tokens */}
-                <div className="relative flex flex-col items-center text-center p-6 rounded-2xl shadow-xl w-full lg:w-1/3 overflow-hidden bg-white/5 border border-gray-700/50 backdrop-filter backdrop-blur-sm">
-                    {/* Glow effect on hover */}
-                    <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 hover:opacity-100" style={{ backgroundImage: 'radial-gradient(ellipse at center, rgba(181, 140, 90, 0.4) 0%, transparent 70%)' }}></div>
-                    <div className="relative z-10 flex flex-col items-center">
-                        <div className="text-xl font-semibold text-white">Community</div>
-                        <div className="mt-2 text-gray-400">
-                          Receives Project N tokens and $ZEX from Zexus.
-                        </div>
+                {/* Step 3 */}
+                <div className="relative flex flex-col items-center text-center p-6 rounded-2xl shadow-xl w-full lg:w-1/3 overflow-hidden bg-white/5 border border-gray-700/50 backdrop-blur-sm">
+                  <div className="absolute inset-0 z-0 opacity-0 transition-opacity duration-500 hover:opacity-100" style={{ backgroundImage: 'radial-gradient(ellipse at center, rgba(181, 140, 90, 0.4) 0%, transparent 70%)' }}></div>
+                  <div className="relative z-10 flex flex-col items-center">
+                    <div className="text-xl font-semibold text-white">Community</div>
+                    <div className="mt-2 text-gray-400">
+                      Receives Project N tokens and $ZEX from Zexus.
                     </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -185,10 +172,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Smooth transition between sections */}
+      {/* Smooth transition */}
       <div className="relative z-20 h-24 bg-gradient-to-b from-[#0A0A0A] to-[rgba(10,10,10,0.8)]"></div>
 
-      {/* "Governance Stories" section */}
+      {/* Governance Stories */}
       <section id="stories" className="relative z-20">
         <div className="bg-[rgba(10,10,10,0.8)] py-24 sm:py-32">
           <div className="container mx-auto px-6 lg:px-8">
@@ -214,7 +201,7 @@ export default function Home() {
                       <span className="font-semibold text-white block">{story.title}</span>
                       {story.description}
                     </p>
-                    <time dateTime={story.date} className="flex-none py-0.5 text-base leading-7 text-gray-500">
+                    <time dateTime={story.iso} className="flex-none py-0.5 text-base leading-7 text-gray-500">
                       {story.date}
                     </time>
                   </li>
@@ -225,7 +212,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* "Unified Treasury" section */}
+      {/* Treasury */}
       <section id="treasury" className="relative z-20">
         <div className="bg-[rgba(10,10,10,0.8)] py-24 sm:py-32">
           <div className="container mx-auto px-6 lg:px-8">
@@ -241,42 +228,28 @@ export default function Home() {
               <table className="min-w-full divide-y divide-gray-700">
                 <thead>
                   <tr>
-                    <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-white">Description</th>
-                    <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-white">Amount</th>
-                    <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-white">Token</th>
-                    <th scope="col" className="py-3.5 px-3 text-left text-sm font-semibold text-white">Date</th>
+                    <th className="py-3.5 px-3 text-left text-sm font-semibold text-white">Description</th>
+                    <th className="py-3.5 px-3 text-left text-sm font-semibold text-white">Amount</th>
+                    <th className="py-3.5 px-3 text-left text-sm font-semibold text-white">Token</th>
+                    <th className="py-3.5 px-3 text-left text-sm font-semibold text-white">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
-                  {/* Example data row */}
                   <tr>
                     <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
                       <div className="font-medium text-white">Developer Grant Payout</div>
                     </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
-                      ???
-                    </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
-                      ZEX
-                    </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
-                      TBA
-                    </td>
+                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">???</td>
+                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">ZEX</td>
+                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">TBA</td>
                   </tr>
-                  {/* Example data row */}
                   <tr>
                     <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
                       <div className="font-medium text-white">Voting Reward</div>
                     </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
-                      ???
-                    </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
-                      ZEX
-                    </td>
-                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">
-                      TBA
-                    </td>
+                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">???</td>
+                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">ZEX</td>
+                    <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-300">TBA</td>
                   </tr>
                 </tbody>
               </table>
