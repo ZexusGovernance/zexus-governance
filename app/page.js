@@ -1,11 +1,83 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Image from 'next/image'
 import HeroCanvas from '@/components/HeroCanvas'
 import Header from '@/components/Header'
 
+const RoadmapItem = ({
+  children,
+  side = 'left',
+  isActive,
+  onHover,
+  stepIndex,
+}) => {
+  return (
+    <div
+      onMouseEnter={() => onHover(stepIndex)}
+      className={`relative flex flex-col md:flex-row items-start md:items-center group transition-all duration-500 cursor-default ${
+        isActive ? 'opacity-100 scale-[1.02] blur-0' : 'opacity-15 blur-[2px]'
+      }`}
+    >
+      {side === 'right' && <div className="flex-1 hidden md:block"></div>}
+      <div
+        className={`absolute left-[12px] md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full z-10 transition-all duration-500 ${
+          isActive
+            ? 'bg-[#FFFEEF] shadow-[0_0_25px_8px_rgba(231,198,148,0.5)] scale-150'
+            : 'bg-white/20 scale-100'
+        }`}
+      ></div>
+      <div
+        className={`flex-1 pl-12 md:pl-0 ${side === 'left' ? 'md:text-right md:pr-20' : 'md:pl-20'}`}
+      >
+        {children}
+      </div>
+      {side === 'left' && <div className="flex-1 hidden md:block"></div>}
+    </div>
+  )
+}
+
 export default function Home() {
   const [notification, setNotification] = useState('')
+  const [activeStep, setActiveStep] = useState(0)
+
+  // ИСПРАВЛЕНИЕ: Создаем рефы по отдельности, чтобы они были стабильными
+  const stepRef0 = useRef(null)
+  const stepRef1 = useRef(null)
+  const stepRef2 = useRef(null)
+
+  // Объединяем их в мемоизированный массив для useEffect
+  const stepsRefs = useMemo(() => [stepRef0, stepRef1, stepRef2], [])
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-35% 0px -35% 0px',
+      threshold: [0.2, 0.5, 0.8],
+    }
+
+    const handleIntersect = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
+          const stepAttr = entry.target.getAttribute('data-step')
+          if (stepAttr !== null) {
+            setActiveStep(parseInt(stepAttr))
+          }
+        }
+      })
+    }
+
+    const observer = new IntersectionObserver(handleIntersect, observerOptions)
+
+    stepsRefs.forEach((ref) => {
+      if (ref.current) observer.observe(ref.current)
+    })
+
+    return () => observer.disconnect()
+  }, [stepsRefs]) // Теперь зависимости стабильны
+
+  const handleStepHover = (index) => {
+    setActiveStep(index)
+  }
 
   const socialLinks = {
     Twitter: 'https://x.com/ZexusGovernance',
@@ -88,7 +160,7 @@ export default function Home() {
 
       <section
         id="roadmap"
-        className="relative z-10 pt-40 pb-0 px-6 overflow-hidden"
+        className="relative z-10 pt-40 pb-40 px-6 overflow-hidden"
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-32">
@@ -103,68 +175,126 @@ export default function Home() {
           <div className="relative">
             <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-[1px] bg-white/10 overflow-hidden">
               <div
-                className="absolute top-0 w-full bg-gradient-to-b from-[#FFFEEF] via-[#E7C694] to-transparent transition-all duration-1000"
-                style={{ height: '32%' }}
+                className="absolute top-0 w-full bg-gradient-to-b from-[#FFFEEF] via-[#E7C694] to-transparent transition-all duration-1000 ease-in-out"
+                style={{
+                  height:
+                    activeStep === 0
+                      ? '30%'
+                      : activeStep === 1
+                        ? '66%'
+                        : '100%',
+                }}
               ></div>
             </div>
 
             <div className="space-y-40 relative z-10">
-              <div className="relative flex flex-col md:flex-row items-start md:items-center group">
-                <div className="flex-1 md:text-right md:pr-20 pl-12 md:pl-0 mb-8 md:mb-0 transition-all duration-700 group-hover:scale-[1.03]">
-                  <div className="inline-block px-3 py-1 mb-4 rounded-full border border-[#E7C694]/40 bg-[#E7C694]/10 text-[#E7C694] text-[8px] font-bold tracking-[0.3em] uppercase">
+              <div ref={stepRef0} data-step="0">
+                <RoadmapItem
+                  isActive={activeStep === 0}
+                  side="left"
+                  stepIndex={0}
+                  onHover={handleStepHover}
+                >
+                  <div
+                    className={`inline-block px-3 py-1 mb-4 rounded-full border transition-all duration-500 ${
+                      activeStep === 0
+                        ? 'border-[#E7C694]/40 bg-[#E7C694]/10 text-[#E7C694]'
+                        : 'border-white/10 bg-white/5 text-white/10'
+                    } text-[8px] font-bold tracking-[0.3em] uppercase`}
+                  >
                     Current Phase
                   </div>
-                  <span className="block text-6xl md:text-8xl font-black text-[#E7C694]/20 group-hover:text-[#E7C694]/30 transition-colors select-none">
+                  <span
+                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${
+                      activeStep === 0 ? 'text-[#E7C694]/20' : 'text-white/5'
+                    }`}
+                  >
                     Q2
                   </span>
-                  <h3 className="text-2xl md:text-3xl font-bold text-[#E7C694] mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight">
+                  <h3
+                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${
+                      activeStep === 0 ? 'text-[#E7C694]' : 'text-white/20'
+                    }`}
+                  >
                     The Genesis & Alpha
                   </h3>
-                  <ul className="space-y-3 text-gray-300 font-light text-sm md:text-base">
+                  <ul
+                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${
+                      activeStep === 0 ? 'text-gray-300' : 'text-gray-600'
+                    }`}
+                  >
                     <li>• Official Announcement & Waitlist Open</li>
                     <li>• Genesis Program Onboarding (10 projects)</li>
                     <li>• Alpha Testnet: Voting, Trust Score, MVP</li>
                     <li>• Sybil Filter & Reputation Integration</li>
                   </ul>
-                </div>
-                <div className="absolute left-[12px] md:left-1/2 md:-translate-x-1/2 w-4 h-4 rounded-full bg-[#FFFEEF] shadow-[0_0_25px_8px_rgba(231,198,148,0.8)] z-10 scale-125 transition-transform duration-500 group-hover:scale-150"></div>
-                <div className="flex-1 hidden md:block"></div>
+                </RoadmapItem>
               </div>
 
-              <div className="relative flex flex-col md:flex-row items-start md:items-center group">
-                <div className="flex-1 hidden md:block"></div>
-                <div className="absolute left-[12px] md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full bg-white/20 shadow-none z-10 group-hover:bg-white/40 transition-all duration-500"></div>
-                <div className="flex-1 md:pl-20 pl-12 opacity-30 group-hover:opacity-60 transition-all duration-700">
-                  <span className="text-6xl md:text-8xl font-black text-white/5 select-none">
+              <div ref={stepRef1} data-step="1">
+                <RoadmapItem
+                  isActive={activeStep === 1}
+                  side="right"
+                  stepIndex={1}
+                  onHover={handleStepHover}
+                >
+                  <span
+                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${
+                      activeStep === 1 ? 'text-white/10' : 'text-white/5'
+                    }`}
+                  >
                     Q3
                   </span>
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight">
+                  <h3
+                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${
+                      activeStep === 1 ? 'text-white' : 'text-white/20'
+                    }`}
+                  >
                     Growth & Mainnet
                   </h3>
-                  <ul className="space-y-3 text-gray-500 font-light text-sm md:text-base">
+                  <ul
+                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${
+                      activeStep === 1 ? 'text-gray-200' : 'text-gray-600'
+                    }`}
+                  >
                     <li>• Public Mainnet Launch (Base/Arbitrum)</li>
                     <li>• Zexus Points Engine (ZXP) Full Launch</li>
                     <li>• Beta Genesis Tier: Wave 2 Projects</li>
                   </ul>
-                </div>
+                </RoadmapItem>
               </div>
 
-              <div className="relative flex flex-col md:flex-row items-start md:items-center group">
-                <div className="flex-1 md:text-right md:pr-20 pl-12 md:pl-0 opacity-30 group-hover:opacity-60 transition-all duration-700">
-                  <span className="text-6xl md:text-8xl font-black text-white/5 select-none">
+              <div ref={stepRef2} data-step="2">
+                <RoadmapItem
+                  isActive={activeStep === 2}
+                  side="left"
+                  stepIndex={2}
+                  onHover={handleStepHover}
+                >
+                  <span
+                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${
+                      activeStep === 2 ? 'text-white/10' : 'text-white/5'
+                    }`}
+                  >
                     Q4
                   </span>
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight">
+                  <h3
+                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${
+                      activeStep === 2 ? 'text-white' : 'text-white/20'
+                    }`}
+                  >
                     Global Expansion
                   </h3>
-                  <ul className="space-y-3 text-gray-500 font-light text-sm md:text-base">
+                  <ul
+                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${
+                      activeStep === 2 ? 'text-gray-200' : 'text-gray-600'
+                    }`}
+                  >
                     <li>• Advanced Governance & DAO Delegate Tools</li>
                     <li>• Zexus Analytics API for Launchpads</li>
                     <li>• Sleuth Partnership: On-chain Detectives</li>
                   </ul>
-                </div>
-                <div className="absolute left-[12px] md:left-1/2 md:-translate-x-1/2 w-3 h-3 rounded-full bg-white/20 z-10 group-hover:bg-white/40 transition-all duration-500"></div>
-                <div className="flex-1 hidden md:block"></div>
+                </RoadmapItem>
               </div>
             </div>
           </div>
@@ -205,7 +335,6 @@ export default function Home() {
                 optional.
               </p>
             </div>
-
             <div>
               <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#E7C694] mb-4">
                 Platform
@@ -223,7 +352,6 @@ export default function Home() {
                   <a
                     href={socialLinks.Docs}
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="hover:text-white transition-colors"
                   >
                     Docs
@@ -231,7 +359,6 @@ export default function Home() {
                 </li>
               </ul>
             </div>
-
             <div>
               <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#E7C694] mb-4">
                 Legal
@@ -241,7 +368,6 @@ export default function Home() {
                   <a
                     href={socialLinks.Privacy}
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="hover:text-white transition-colors"
                   >
                     Privacy
@@ -251,7 +377,6 @@ export default function Home() {
                   <a
                     href={socialLinks.Terms}
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="hover:text-white transition-colors"
                   >
                     Terms
@@ -260,43 +385,25 @@ export default function Home() {
               </ul>
             </div>
           </div>
-
           <div className="pt-8 border-t border-white/[0.03] flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-[9px] tracking-[0.4em] text-gray-600 uppercase">
-              © 2026 Zexus Protocol • Alpha v1.0
+              © 2026 Zexus Protocol
             </p>
-
             <div className="flex gap-8">
               {Object.entries(socialLinks)
                 .filter(
                   ([name]) => !['Docs', 'Privacy', 'Terms'].includes(name),
                 )
-                .map(([name, url]) => {
-                  if (name === 'Discord') {
-                    return (
-                      <button
-                        key={name}
-                        onClick={() =>
-                          showNotification('Discord Server Coming Soon')
-                        }
-                        className="text-[9px] tracking-[0.3em] text-gray-500 uppercase font-bold hover:text-[#E7C694] transition-colors cursor-pointer"
-                      >
-                        {name}
-                      </button>
-                    )
-                  }
-                  return (
-                    <a
-                      key={name}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[9px] tracking-[0.3em] text-gray-500 uppercase font-bold hover:text-[#E7C694] transition-colors"
-                    >
-                      {name}
-                    </a>
-                  )
-                })}
+                .map(([name, url]) => (
+                  <a
+                    key={name}
+                    href={url}
+                    target="_blank"
+                    className="text-[9px] tracking-[0.3em] text-gray-500 uppercase font-bold hover:text-[#E7C694] transition-colors"
+                  >
+                    {name}
+                  </a>
+                ))}
             </div>
           </div>
         </div>
