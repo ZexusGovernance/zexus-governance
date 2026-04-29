@@ -1,0 +1,10 @@
+{
+  "1": {
+    "question": "Do we need to supply 100 million ZEX tokens?",
+    "yes": 1,
+    "no": 0,
+    "voters": [
+      "0x03c99dc0ac4bd5aDa983De615416443B24bF98D6"
+    ]
+  }
+}
