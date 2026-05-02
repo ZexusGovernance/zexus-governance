@@ -1,8 +1,13 @@
 'use client'
+
 import { useState, useEffect, useRef, useMemo } from 'react'
 import Image from 'next/image'
 import HeroCanvas from '@/components/HeroCanvas'
 import Header from '@/components/Header'
+import WagmiProviderWrapper from '@/components/providers/wagmi-provider'
+import WaitlistButton from '@/components/WaitlistButton'
+import RecentJoins from '@/components/RecentJoins'
+import FAQ from '@/components/FAQ'
 
 const RoadmapItem = ({
   children,
@@ -36,16 +41,15 @@ const RoadmapItem = ({
   )
 }
 
-export default function Home() {
+// ─── Внутренний компонент страницы (внутри Wagmi провайдера) ─────────────────
+
+function HomeContent() {
   const [notification, setNotification] = useState('')
   const [activeStep, setActiveStep] = useState(0)
 
-  // ИСПРАВЛЕНИЕ: Создаем рефы по отдельности, чтобы они были стабильными
   const stepRef0 = useRef(null)
   const stepRef1 = useRef(null)
   const stepRef2 = useRef(null)
-
-  // Объединяем их в мемоизированный массив для useEffect
   const stepsRefs = useMemo(() => [stepRef0, stepRef1, stepRef2], [])
 
   useEffect(() => {
@@ -67,16 +71,17 @@ export default function Home() {
     }
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions)
-
     stepsRefs.forEach((ref) => {
       if (ref.current) observer.observe(ref.current)
     })
-
     return () => observer.disconnect()
-  }, [stepsRefs]) // Теперь зависимости стабильны
+  }, [stepsRefs])
 
-  const handleStepHover = (index) => {
-    setActiveStep(index)
+  const handleStepHover = (index) => setActiveStep(index)
+
+  const showNotification = (message) => {
+    setNotification(message)
+    setTimeout(() => setNotification(''), 4000)
   }
 
   const socialLinks = {
@@ -88,19 +93,14 @@ export default function Home() {
     Terms: 'https://zexus-governance.gitbook.io/whitepaper/terms-of-service',
   }
 
-  const showNotification = (message) => {
-    setNotification(message)
-    setTimeout(() => setNotification(''), 3000)
-  }
-
   return (
     <main className="relative min-h-screen bg-[#050505] text-white selection:bg-[#E7C694] selection:text-black font-sans overflow-x-hidden">
+      {/* Фоны */}
       <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <div className="relative w-full h-full opacity-[0.35] blur-[1px] scale-105 -left-[5%] md:-left-[3%]">
           <HeroCanvas />
         </div>
       </div>
-
       <div className="fixed inset-0 z-[1] pointer-events-none bg-radial-gradient from-transparent via-[#050505]/70 to-[#050505]"></div>
       <div
         className="fixed inset-0 z-[2] opacity-[0.04] pointer-events-none mix-blend-overlay"
@@ -109,12 +109,14 @@ export default function Home() {
         }}
       ></div>
 
+      {/* Хедер */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90vw] max-w-5xl">
         <div className="bg-[#0A0A0A]/40 backdrop-blur-md border border-white/10 rounded-full px-8 py-2 shadow-2xl transition-all hover:border-[#E7C694]/20">
           <Header />
         </div>
       </div>
 
+      {/* Нотификация */}
       {notification && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[110] animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="bg-[#1A1A1A]/90 backdrop-blur-xl border border-[#E7C694]/30 px-8 py-3 rounded-full shadow-[0_10px_40px_rgba(231,198,148,0.2)] text-[#E7C694] font-bold text-sm tracking-widest uppercase">
@@ -123,12 +125,13 @@ export default function Home() {
         </div>
       )}
 
+      {/* ─── HERO ─────────────────────────────────────────────────────────────── */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-16 text-center">
         <div className="w-full max-w-[1400px]">
           <h1 className="text-6xl sm:text-8xl md:text-[110px] font-black tracking-tighter mb-8 leading-[0.85] text-white">
             Verify, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-tr from-[#E7C694] via-[#FFFEEF] to-[#A68B5B] drop-shadow-[0_5px_15px_rgba(231,198,148,0.2)]">
-              Don’t Trust.
+              Don't Trust.
             </span>
           </h1>
 
@@ -137,33 +140,30 @@ export default function Home() {
             transparency. Protection for communities, power for builders.
           </p>
 
+          {/* ── Waitlist кнопка / дашборд (primary) ── */}
           <div className="relative z-[20] flex flex-col items-center group/btn-container">
-            <span className="text-[10px] uppercase tracking-[0.6em] text-[#E7C694] mb-6 font-bold animate-pulse opacity-60">
-              Waitlist is Live
-            </span>
-            <button
-              onClick={() =>
-                showNotification('Waitlist Registration Opening Soon')
-              }
-              className="group relative inline-flex items-center justify-center px-16 py-6 overflow-hidden rounded-full bg-[#0A0A0A] border border-[#E7C694]/30 text-[#E7C694] transition-all duration-500 hover:border-[#E7C694] hover:shadow-[0_0_35px_rgba(231,198,148,0.15)] active:scale-95"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#E7C694]/10 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-              <span className="relative z-10 text-xl font-black uppercase tracking-[0.2em] group-hover:text-white transition-colors duration-300">
-                Join the Waitlist
-              </span>
-              <div className="absolute inset-[-1px] rounded-full bg-gradient-to-r from-[#E7C694]/40 to-[#A68B5B]/40 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500"></div>
-            </button>
+            <WaitlistButton
+              variant="primary"
+              onNotification={showNotification}
+            />
+
             <div className="absolute -bottom-10 w-full h-20 bg-[#E7C694]/5 blur-[60px] rounded-full pointer-events-none"></div>
           </div>
         </div>
       </section>
 
+      {/* ─── DIVIDER ─────────────────────────────────────────────────────────── */}
+      <div className="relative z-10 flex justify-center py-8">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#E7C694]/30 to-transparent" />
+      </div>
+
+      {/* ─── ROADMAP ──────────────────────────────────────────────────────────── */}
       <section
         id="roadmap"
-        className="relative z-10 pt-40 pb-40 px-6 overflow-hidden"
+        className="relative z-10 pt-24 pb-24 px-6 overflow-hidden"
       >
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-32">
+          <div className="text-center mb-20">
             <h2 className="text-[#E7C694] font-mono tracking-[0.4em] uppercase text-[10px] mb-4 opacity-60 animate-pulse">
               Strategic Path
             </h2>
@@ -196,32 +196,22 @@ export default function Home() {
                   onHover={handleStepHover}
                 >
                   <div
-                    className={`inline-block px-3 py-1 mb-4 rounded-full border transition-all duration-500 ${
-                      activeStep === 0
-                        ? 'border-[#E7C694]/40 bg-[#E7C694]/10 text-[#E7C694]'
-                        : 'border-white/10 bg-white/5 text-white/10'
-                    } text-[8px] font-bold tracking-[0.3em] uppercase`}
+                    className={`inline-block px-3 py-1 mb-4 rounded-full border transition-all duration-500 ${activeStep === 0 ? 'border-[#E7C694]/40 bg-[#E7C694]/10 text-[#E7C694]' : 'border-white/10 bg-white/5 text-white/10'} text-[8px] font-bold tracking-[0.3em] uppercase`}
                   >
                     Current Phase
                   </div>
                   <span
-                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${
-                      activeStep === 0 ? 'text-[#E7C694]/20' : 'text-white/5'
-                    }`}
+                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${activeStep === 0 ? 'text-[#E7C694]/20' : 'text-white/5'}`}
                   >
                     Q2
                   </span>
                   <h3
-                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${
-                      activeStep === 0 ? 'text-[#E7C694]' : 'text-white/20'
-                    }`}
+                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${activeStep === 0 ? 'text-[#E7C694]' : 'text-white/20'}`}
                   >
                     The Genesis & Alpha
                   </h3>
                   <ul
-                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${
-                      activeStep === 0 ? 'text-gray-300' : 'text-gray-600'
-                    }`}
+                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${activeStep === 0 ? 'text-gray-300' : 'text-gray-600'}`}
                   >
                     <li>• Official Announcement & Waitlist Open</li>
                     <li>• Genesis Program Onboarding (10 projects)</li>
@@ -239,23 +229,17 @@ export default function Home() {
                   onHover={handleStepHover}
                 >
                   <span
-                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${
-                      activeStep === 1 ? 'text-white/10' : 'text-white/5'
-                    }`}
+                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${activeStep === 1 ? 'text-white/10' : 'text-white/5'}`}
                   >
                     Q3
                   </span>
                   <h3
-                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${
-                      activeStep === 1 ? 'text-white' : 'text-white/20'
-                    }`}
+                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${activeStep === 1 ? 'text-white' : 'text-white/20'}`}
                   >
                     Growth & Mainnet
                   </h3>
                   <ul
-                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${
-                      activeStep === 1 ? 'text-gray-200' : 'text-gray-600'
-                    }`}
+                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${activeStep === 1 ? 'text-gray-200' : 'text-gray-600'}`}
                   >
                     <li>• Public Mainnet Launch (Base/Arbitrum)</li>
                     <li>• Zexus Points Engine (ZXP) Full Launch</li>
@@ -272,23 +256,17 @@ export default function Home() {
                   onHover={handleStepHover}
                 >
                   <span
-                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${
-                      activeStep === 2 ? 'text-white/10' : 'text-white/5'
-                    }`}
+                    className={`block text-6xl md:text-8xl font-black transition-colors duration-500 select-none ${activeStep === 2 ? 'text-white/10' : 'text-white/5'}`}
                   >
                     Q4
                   </span>
                   <h3
-                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${
-                      activeStep === 2 ? 'text-white' : 'text-white/20'
-                    }`}
+                    className={`text-2xl md:text-3xl font-bold mt-[-1rem] md:mt-[-2rem] mb-4 tracking-tight transition-colors duration-500 ${activeStep === 2 ? 'text-white' : 'text-white/20'}`}
                   >
                     Global Expansion
                   </h3>
                   <ul
-                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${
-                      activeStep === 2 ? 'text-gray-200' : 'text-gray-600'
-                    }`}
+                    className={`space-y-3 font-light text-sm md:text-base transition-colors duration-500 ${activeStep === 2 ? 'text-gray-200' : 'text-gray-600'}`}
                   >
                     <li>• Advanced Governance & DAO Delegate Tools</li>
                     <li>• Zexus Analytics API for Launchpads</li>
@@ -301,25 +279,23 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative z-10 pt-20 pb-32 flex flex-col items-center">
-        <div className="w-[1px] h-32 bg-white/10 mb-16"></div>
-        <div className="max-w-4xl w-full px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-white mb-8">
-            Join the{' '}
-            <span className="font-black italic">Evolution of Trust</span>
-          </h2>
-          <div className="relative inline-block group">
-            <div className="absolute inset-0 bg-[#E7C694]/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <button
-              onClick={() => showNotification('Initializing Genesis Portal...')}
-              className="relative px-12 py-4 rounded-full border border-white/10 bg-[#0A0A0A] hover:border-[#E7C694]/40 hover:text-[#E7C694] transition-all duration-500 text-sm font-bold tracking-[0.2em] uppercase"
-            >
-              Get Early Access
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* ─── DIVIDER ─────────────────────────────────────────────────────────── */}
+      <div className="relative z-10 flex justify-center py-4">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#E7C694]/30 to-transparent" />
+      </div>
 
+      {/* ─── LIVE RECENT JOINS ──────────────────────────────────────────────── */}
+      <RecentJoins />
+
+      {/* ─── DIVIDER ─────────────────────────────────────────────────────────── */}
+      <div className="relative z-10 flex justify-center py-4">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#E7C694]/30 to-transparent" />
+      </div>
+
+      {/* ─── FAQ ──────────────────────────────────────────────────────────────── */}
+      <FAQ />
+
+      {/* ─── FOOTER ────────────────────────────────────────────────────────────── */}
       <footer className="relative z-10 pt-16 pb-10 px-10 border-t border-white/[0.03] bg-[#080808]/30">
         <div className="max-w-[1200px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
@@ -409,5 +385,15 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  )
+}
+
+// ─── Главный экспорт: оборачиваем в Wagmi провайдер ─────────────────────────
+
+export default function Home() {
+  return (
+    <WagmiProviderWrapper>
+      <HomeContent />
+    </WagmiProviderWrapper>
   )
 }
