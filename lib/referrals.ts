@@ -41,16 +41,26 @@ const TIER_THRESHOLDS = {
 const REDIS_KEY = 'zexus:referrals'
 
 // ─── Backend выбор ──────────────────────────────────────────────────────────
+//
+// Поддерживаем оба именования env-переменных:
+// - UPSTASH_REDIS_REST_URL/_TOKEN — если ставил Upstash отдельно
+// - KV_REST_API_URL/_TOKEN — Vercel Marketplace integration ставит так
 
-const useRedis =
-  !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN
+const REDIS_URL =
+  process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || ''
+const REDIS_TOKEN =
+  process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || ''
+
+const useRedis = !!REDIS_URL && !!REDIS_TOKEN
 
 let redis: Redis | null = null
 if (useRedis) {
-  redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL!,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-  })
+  redis = new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
+  console.log(
+    `[referrals] Using Redis backend (${process.env.UPSTASH_REDIS_REST_URL ? 'UPSTASH_*' : 'KV_*'} env vars)`
+  )
+} else {
+  console.log('[referrals] Using FILE backend (no Redis env vars detected)')
 }
 
 // ─── Хелперы ────────────────────────────────────────────────────────────────

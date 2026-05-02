@@ -133,17 +133,27 @@ export async function POST(req: NextRequest) {
     })
 
     if (alreadyIn) {
+      // Юзер уже on-chain. Но возможно его нет в Redis (например, попал
+      // в контракт когда Redis ещё не работал, или в файловое хранилище
+      // которое потом мигрировали). Бэкфилим: registerUser идемпотентен
+      // — если юзер уже в Redis, ничего не сделает.
+      const stats = await getUserStats(address)
+      if (!stats.exists) {
+        console.log(`[Waitlist] Backfilling missing referrals entry for ${address}`)
+        await registerUser(address, referrer || null)
+      }
+
       const total = await publicClient.readContract({
         address: CONTRACT_ADDRESS,
         abi: WAITLIST_ABI,
         functionName: 'count',
       })
-      const stats = await getUserStats(address)
+      const freshStats = await getUserStats(address)
       return NextResponse.json({
         success: false,
         alreadyIn: true,
         total: Number(total),
-        stats,
+        stats: freshStats,
       })
     }
 
