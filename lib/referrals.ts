@@ -1,28 +1,30 @@
 // lib/referrals.ts
 //
-// Off-chain реферальная система. Контракт хранит только сам факт подписки,
-// а очки/рефералы — здесь, в data/referrals.json. Это позволяет менять
-// формулу без миграции контракта и бесплатно (без газа).
+// Off-chain реферальная система. Контракт хранит сам факт подписки,
+// а очки/рефералы — здесь.
 //
-// Когда запустишь ZXP — снапшотом этого файла раздаёшь токены/баллы.
+// На проде (Vercel) хранилище — Upstash Redis. Если переменные окружения
+// UPSTASH_REDIS_REST_URL не заданы (например, локально без БД) — fallback
+// на data/referrals.json. Это позволяет разрабатывать без локального Redis.
 
 import { promises as fs } from 'fs'
 import path from 'path'
+import { Redis } from '@upstash/redis'
 
 // ─── Типы ───────────────────────────────────────────────────────────────────
 
 export interface ReferralUser {
-  address: string                    // lowercase
-  joinedAt: string                   // ISO timestamp
-  referrer: string | null            // lowercase address или null если пришёл напрямую
-  directReferrals: string[]          // lowercase addresses, кого этот юзер привёл
-  points: number                     // текущий баланс очков
-  bonusFromAlphaTest: number         // зарезервировано для будущего airdrop за альфа-тест
-  txHash?: string                    // tx подписки в контракт (для линка в BaseScan)
+  address: string
+  joinedAt: string
+  referrer: string | null
+  directReferrals: string[]
+  points: number
+  bonusFromAlphaTest: number
+  txHash?: string
 }
 
 export interface ReferralsData {
-  users: Record<string, ReferralUser>  // key: lowercase address
+  users: Record<string, ReferralUser>
 }
 
 export type Tier = 'Bronze' | 'Silver' | 'Gold'
@@ -31,13 +33,24 @@ export type Tier = 'Bronze' | 'Silver' | 'Gold'
 
 const BASE_POINTS_FOR_JOINING = 5
 
-// Пороги тиров (по количеству прямых рефералов):
-//   Bronze:  0 - 9   рефералов  →  1 очко за нового реферала
-//   Silver: 10 - 29 рефералов  →  2 очка за нового реферала
-//   Gold:   30+      рефералов  →  3 очка за нового реферала
 const TIER_THRESHOLDS = {
   silver: 10,
   gold: 30,
+}
+
+const REDIS_KEY = 'zexus:referrals'
+
+// ─── Backend выбор ──────────────────────────────────────────────────────────
+
+const useRedis =
+  !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN
+
+let redis: Redis | null = null
+if (useRedis) {
+  redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  })
 }
 
 // ─── Хелперы ────────────────────────────────────────────────────────────────
@@ -57,6 +70,21 @@ function pointsPerReferral(directReferralsCount: number): number {
 }
 
 async function readData(): Promise<ReferralsData> {
+  // Redis backend (на Vercel)
+  if (redis) {
+    try {
+      const data = await redis.get<ReferralsData>(REDIS_KEY)
+      if (data && typeof data === 'object' && 'users' in data) {
+        return data as ReferralsData
+      }
+      return { users: {} }
+    } catch (err) {
+      console.error('[referrals] Redis read failed:', err)
+      return { users: {} }
+    }
+  }
+
+  // File backend (локально)
   try {
     await fs.mkdir(DATA_DIR, { recursive: true })
     const raw = await fs.readFile(REFERRALS_FILE, 'utf-8')
@@ -69,6 +97,13 @@ async function readData(): Promise<ReferralsData> {
 }
 
 async function writeData(data: ReferralsData): Promise<void> {
+  // Redis backend
+  if (redis) {
+    await redis.set(REDIS_KEY, data)
+    return
+  }
+
+  // File backend
   await fs.mkdir(DATA_DIR, { recursive: true })
   await fs.writeFile(REFERRALS_FILE, JSON.stringify(data, null, 2), 'utf-8')
 }
@@ -78,9 +113,6 @@ async function writeData(data: ReferralsData): Promise<void> {
 /**
  * Регистрирует юзера в реферальной системе.
  * Вызывается ПОСЛЕ успешной записи в контракт.
- *
- * @param userAddress адрес нового подписчика
- * @param referrerAddress адрес реферера (или null если пришёл напрямую)
  */
 export async function registerUser(
   userAddress: string,
@@ -91,12 +123,10 @@ export async function registerUser(
   const userKey = userAddress.toLowerCase()
   const rawReferrerKey = referrerAddress?.toLowerCase() || null
 
-  // Если уже есть — ничего не делаем (защита от двойного вызова)
   if (data.users[userKey]) {
     return { user: data.users[userKey], rewardedReferrer: null }
   }
 
-  // Защита от self-referral и невалидных рефереров
   const validReferrerKey =
     rawReferrerKey &&
     rawReferrerKey !== userKey &&
@@ -116,7 +146,6 @@ export async function registerUser(
 
   data.users[userKey] = newUser
 
-  // Награждаем реферера согласно его текущему тиру
   let rewardedReferrer: ReferralUser | null = null
   if (validReferrerKey) {
     const ref = data.users[validReferrerKey]
@@ -131,15 +160,14 @@ export async function registerUser(
 }
 
 /**
- * Возвращает статистику конкретного юзера + его позицию в общей очереди.
- * Если юзера нет — exists: false, но totalUsers всё равно вернётся.
+ * Возвращает статистику конкретного юзера + его позицию в очереди.
  */
 export async function getUserStats(userAddress: string): Promise<{
   exists: boolean
   points: number
   tier: Tier
   referredCount: number
-  position: number          // 1-based; 0 если юзера нет
+  position: number
   totalUsers: number
 }> {
   const data = await readData()
@@ -158,7 +186,6 @@ export async function getUserStats(userAddress: string): Promise<{
     }
   }
 
-  // Ранжируем: больше очков → выше; при равенстве — кто раньше пришёл → выше
   const allUsers = Object.values(data.users)
   allUsers.sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points
@@ -179,7 +206,6 @@ export async function getUserStats(userAddress: string): Promise<{
 
 /**
  * Последние N подписей по времени (для live activity feed).
- * Сортировка DESC — новые сверху.
  */
 export async function getRecentJoins(limit: number = 8): Promise<
   Array<{
