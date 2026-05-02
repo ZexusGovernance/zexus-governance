@@ -18,7 +18,7 @@ const config = getDefaultConfig({
   chains: [base, mainnet, polygon, optimism, arbitrum],
   transports: {
     [base.id]: http('https://mainnet.base.org'),
-    [mainnet.id]: http('https://eth.llamarpc.com'),
+    [mainnet.id]: http('https://cloudflare-eth.com'),
     [polygon.id]: http('https://polygon-rpc.com'),
     [optimism.id]: http('https://mainnet.optimism.io'),
     [arbitrum.id]: http('https://arb1.arbitrum.io/rpc'),

@@ -73,10 +73,27 @@ async function readData(): Promise<ReferralsData> {
   // Redis backend (на Vercel)
   if (redis) {
     try {
-      const data = await redis.get<ReferralsData>(REDIS_KEY)
-      if (data && typeof data === 'object' && 'users' in data) {
+      const raw = await redis.get(REDIS_KEY)
+      if (!raw) return { users: {} }
+
+      // Upstash может вернуть либо уже-распаршенный объект,
+      // либо строку — обрабатываем оба случая явно
+      let data: unknown
+      if (typeof raw === 'string') {
+        data = JSON.parse(raw)
+      } else {
+        data = raw
+      }
+
+      if (
+        data &&
+        typeof data === 'object' &&
+        'users' in data &&
+        (data as ReferralsData).users
+      ) {
         return data as ReferralsData
       }
+      console.warn('[referrals] Redis returned unexpected shape:', data)
       return { users: {} }
     } catch (err) {
       console.error('[referrals] Redis read failed:', err)
@@ -97,15 +114,31 @@ async function readData(): Promise<ReferralsData> {
 }
 
 async function writeData(data: ReferralsData): Promise<void> {
-  // Redis backend
+  // Redis backend — явная сериализация для надёжности
   if (redis) {
-    await redis.set(REDIS_KEY, data)
-    return
+    try {
+      const json = JSON.stringify(data)
+      const userCount = Object.keys(data.users).length
+      console.log(
+        `[referrals] Writing to Redis: ${json.length} bytes, ${userCount} users`
+      )
+      await redis.set(REDIS_KEY, json)
+      console.log(`[referrals] Redis write OK`)
+      return
+    } catch (err) {
+      console.error('[referrals] Redis write FAILED:', err)
+      throw err // важно: пробрасываем ошибку чтобы route.ts вернул 500
+    }
   }
 
   // File backend
-  await fs.mkdir(DATA_DIR, { recursive: true })
-  await fs.writeFile(REFERRALS_FILE, JSON.stringify(data, null, 2), 'utf-8')
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true })
+    await fs.writeFile(REFERRALS_FILE, JSON.stringify(data, null, 2), 'utf-8')
+  } catch (err) {
+    console.error('[referrals] File write FAILED:', err)
+    throw err
+  }
 }
 
 // ─── API ────────────────────────────────────────────────────────────────────
