@@ -35,7 +35,7 @@ export default function WaitlistButton({
   const [stats, setStats] = useState<UserStats | null>(null)
   const [referrer, setReferrer] = useState<string | null>(null)
 
-  // Читаем ?ref= из URL при монтировании
+  // Read ?ref= from URL on mount
   useEffect(() => {
     if (typeof window === 'undefined') return
     const params = new URLSearchParams(window.location.search)
@@ -45,12 +45,12 @@ export default function WaitlistButton({
     }
   }, [])
 
-  // Загружаем счётчик при монтировании
+  // Load the counter on mount
   useEffect(() => {
     fetchCount()
   }, [])
 
-  // Когда кошелёк подключается — проверяем статус адреса
+  // When the wallet connects, check the address status
   useEffect(() => {
     if (isConnected && address) {
       checkWaitlistStatus(address)
@@ -66,7 +66,7 @@ export default function WaitlistButton({
       const data = await res.json()
       if (typeof data.total === 'number') setCount(data.total)
     } catch {
-      // тихо игнорируем
+      // silently ignore — counter just won't appear
     }
   }
 
@@ -143,7 +143,7 @@ export default function WaitlistButton({
     }
   }
 
-  // ─── Текст кнопки ─────────────────────────────────────────────────────────
+  // ─── Button content ───────────────────────────────────────────────────────
 
   const getButtonContent = () => {
     if (!isConnected || status === 'idle') {
@@ -179,7 +179,7 @@ export default function WaitlistButton({
     status === 'submitting' ||
     isConnecting
 
-  // ─── Счётчик участников + Verified бейдж в одну строку ──────────────────
+  // ─── Counter + Verified badge in a single line ───────────────────────────
 
   const CONTRACT_ADDR = '0xB6ce48D89DfDe6cF9589b8f889d6F9f05Fa07584'
 
@@ -199,7 +199,7 @@ export default function WaitlistButton({
           </span>
         </span>
 
-        {/* Разделитель */}
+        {/* Separator */}
         <span className="text-gray-700">·</span>
 
         {/* Verified link */}
@@ -219,8 +219,8 @@ export default function WaitlistButton({
   // ─── PRIMARY ──────────────────────────────────────────────────────────────
 
   if (variant === 'primary') {
-    // Если юзер уже на вайтлисте — показываем единый дашборд-панель.
-    // Никакой большой кнопки и отдельных мелких бейджей — всё в одном.
+    // If the user is already on the waitlist, show the single dashboard panel
+    // — no big button, no scattered badges, everything lives inside one card.
     if (isSuccess && stats && address) {
       return (
         <div className="flex flex-col items-center w-full">
@@ -229,7 +229,7 @@ export default function WaitlistButton({
       )
     }
 
-    // Иначе — обычная кнопка для подключения / подписи
+    // Otherwise: the regular button for connecting / signing
     return (
       <div className="flex flex-col items-center w-full">
         <span className="text-[10px] uppercase tracking-[0.6em] text-[#E7C694] mb-6 font-bold animate-pulse opacity-60">
@@ -277,7 +277,7 @@ export default function WaitlistButton({
           </p>
         )}
 
-        {/* Если есть реферер из URL — показываем что юзер пришёл по приглашению */}
+        {/* If a referrer is present in the URL, surface it as a small note */}
         {referrer && (
           <p className="text-[10px] tracking-widest uppercase text-[#E7C694]/60 mt-3">
             Invited by {referrer.slice(0, 6)}...{referrer.slice(-4)}

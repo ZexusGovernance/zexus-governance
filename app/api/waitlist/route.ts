@@ -1,9 +1,10 @@
 // app/api/waitlist/route.ts
 //
-// Переменные окружения (.env.local):
-//   WAITLIST_CONTRACT_ADDRESS=0x...       адрес задеплоенного контракта
-//   RELAYER_PRIVATE_KEY=0x...             приватный ключ relayer кошелька
-//   NEXT_PUBLIC_BASE_RPC_URL=https://mainnet.base.org  (опционально, fallback на public RPC)
+// Required environment variables:
+//   WAITLIST_CONTRACT_ADDRESS=0x...       deployed contract address
+//   RELAYER_PRIVATE_KEY=0x...             relayer wallet private key
+//   BASE_RPC_URL=https://...              server-side Base RPC (optional)
+//   NEXT_PUBLIC_BASE_RPC_URL=...          fallback if BASE_RPC_URL is missing
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createPublicClient, createWalletClient, http, verifyMessage } from 'viem'
@@ -11,7 +12,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { base } from 'viem/chains'
 import { registerUser, getUserStats } from '@/lib/referrals'
 
-// ─── ABI контракта (только нужные функции) ────────────────────────────────────
+// ─── Contract ABI (only the functions we need) ──────────────────────────────
 
 const WAITLIST_ABI = [
   {
@@ -37,10 +38,10 @@ const WAITLIST_ABI = [
   },
 ] as const
 
-// ─── Клиенты viem ─────────────────────────────────────────────────────────────
+// ─── viem clients ───────────────────────────────────────────────────────────
 
-// Server-only RPC (BASE_RPC_URL — без NEXT_PUBLIC_, ключ не утекает в браузер).
-// Fallback на публичный RPC если приватного нет.
+// Server-only RPC (BASE_RPC_URL has no NEXT_PUBLIC_ prefix, key stays on the server).
+// Falls back to the public RPC when no private one is configured.
 const RPC_URL =
   process.env.BASE_RPC_URL ||
   process.env.NEXT_PUBLIC_BASE_RPC_URL ||
@@ -63,7 +64,7 @@ function getWalletClient() {
   })
 }
 
-// ─── GET /api/waitlist?address=0x... ──────────────────────────────────────────
+// ─── GET /api/waitlist?address=0x... ────────────────────────────────────────
 
 export async function GET(req: NextRequest) {
   const address = req.nextUrl.searchParams.get('address')
@@ -95,7 +96,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ─── POST /api/waitlist ───────────────────────────────────────────────────────
+// ─── POST /api/waitlist ─────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   try {
@@ -113,7 +114,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Contract not configured' }, { status: 500 })
     }
 
-    // 1. Верифицируем подпись пользователя
+    // 1. Verify the user's signature
     const isValid = await verifyMessage({
       address: address as `0x${string}`,
       message,
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 403 })
     }
 
-    // 2. Проверяем не зарегистрирован ли уже
+    // 2. Check whether the address is already in the contract
     const alreadyIn = await publicClient.readContract({
       address: CONTRACT_ADDRESS,
       abi: WAITLIST_ABI,
@@ -133,10 +134,10 @@ export async function POST(req: NextRequest) {
     })
 
     if (alreadyIn) {
-      // Юзер уже on-chain. Но возможно его нет в Redis (например, попал
-      // в контракт когда Redis ещё не работал, или в файловое хранилище
-      // которое потом мигрировали). Бэкфилим: registerUser идемпотентен
-      // — если юзер уже в Redis, ничего не сделает.
+      // The user is already on-chain but might be missing from Redis
+      // (e.g. they joined while Redis was unavailable, or used the file
+      // backend that was later migrated). Backfill on the fly:
+      // registerUser is idempotent — it skips users who already exist.
       const stats = await getUserStats(address)
       if (!stats.exists) {
         console.log(`[Waitlist] Backfilling missing referrals entry for ${address}`)
@@ -157,7 +158,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // 3. Relayer отправляет транзакцию — пользователь газ не платит
+    // 3. Relayer pays the gas — user does not
     const walletClient = getWalletClient()
 
     const txHash = await walletClient.writeContract({
@@ -169,7 +170,7 @@ export async function POST(req: NextRequest) {
 
     console.log(`[Waitlist] Tx sent: ${txHash}`)
 
-    // 4. Ждём подтверждения (Base быстрый, ~2 сек)
+    // 4. Wait for confirmation (Base is fast, ~2s blocks)
     const receipt = await publicClient.waitForTransactionReceipt({
       hash: txHash,
       timeout: 30_000,
@@ -179,10 +180,10 @@ export async function POST(req: NextRequest) {
       throw new Error('Transaction reverted on-chain')
     }
 
-    // 5. Регистрируем в реферальной системе (off-chain)
+    // 5. Register the user in the referral system (off-chain)
     await registerUser(address, referrer || null, txHash)
 
-    // 6. Обновлённый счётчик и статистика юзера
+    // 6. Refresh the counter and the user's stats
     const newTotal = await publicClient.readContract({
       address: CONTRACT_ADDRESS,
       abi: WAITLIST_ABI,

@@ -1,35 +1,53 @@
 // app/api/recent-joins/route.ts
 //
-// Возвращает последние N подписей для live activity feed.
+// Returns the latest N joins for the live activity feed.
 //
-// ВАЖНО: данные читаются из data/referrals.json, а не из событий контракта.
-// Причина: на free tier Alchemy лимит на eth_getLogs всего 10 блоков
-// (бесполезно для нашей задачи). Локальные данные синхронизированы с
-// контрактом по построению — каждая подписка идёт через POST /api/waitlist,
-// который пишет ОДНОВРЕМЕННО и в контракт, и в файл. Если транзакция
-// падает on-chain — мы файл не обновляем (см. route.ts).
+// IMPORTANT: data is read from referrals storage (Redis or file), NOT
+// from contract events. The Alchemy free tier limits eth_getLogs to a 10
+// block range which is useless for this. Local data is in sync with the
+// contract by construction — every join goes through POST /api/waitlist,
+// which writes to both atomically. If the on-chain tx reverts we never
+// touch the off-chain store.
 //
-// При желании в будущем можно мигрировать на платный RPC + getLogs или на
-// indexed-сервис типа The Graph / Goldsky.
+// In-memory cache reduces Redis load: even if 100 visitors poll the feed
+// concurrently, only 1 read every CACHE_TTL_MS hits Upstash.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getRecentJoins } from '@/lib/referrals'
+
+interface JoinPayload {
+  participant: string
+  timestamp: number
+  txHash: string
+  joinedAt: string
+}
+
+const CACHE_TTL_MS = 30_000 // 30 seconds
+
+let cache: { data: JoinPayload[]; ts: number } | null = null
 
 export async function GET(req: NextRequest) {
   const limitParam = req.nextUrl.searchParams.get('limit')
   const limit = Math.min(Math.max(parseInt(limitParam || '8', 10) || 8, 1), 50)
 
   try {
-    const joins = await getRecentJoins(limit)
+    // Serve from cache if fresh
+    const now = Date.now()
+    if (cache && now - cache.ts < CACHE_TTL_MS) {
+      return NextResponse.json({ joins: cache.data.slice(0, limit) })
+    }
 
-    return NextResponse.json({
-      joins: joins.map((j) => ({
-        participant: j.address,
-        timestamp: Math.floor(new Date(j.joinedAt).getTime() / 1000),
-        txHash: j.txHash || '',
-        joinedAt: j.joinedAt,
-      })),
-    })
+    const joins = await getRecentJoins(50) // fetch a bit more, slice on demand
+    const payload: JoinPayload[] = joins.map((j) => ({
+      participant: j.address,
+      timestamp: Math.floor(new Date(j.joinedAt).getTime() / 1000),
+      txHash: j.txHash || '',
+      joinedAt: j.joinedAt,
+    }))
+
+    cache = { data: payload, ts: now }
+
+    return NextResponse.json({ joins: payload.slice(0, limit) })
   } catch (err: unknown) {
     const error = err as { message?: string }
     console.error('[RecentJoins] Error:', error)

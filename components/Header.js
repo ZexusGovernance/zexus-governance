@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react'
 import { Dialog } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -133,11 +133,12 @@ export default function Header() {
             </Link>
             <button
               type="button"
-              className="-m-2.5 rounded-md p-2.5 text-gray-400"
+              className="-m-2.5 rounded-md p-2.5 text-[#E7C694] hover:text-white transition-colors"
               onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
             >
               <span className="sr-only">Close menu</span>
-              <XMarkIcon className="h-7 w-7" aria-hidden="true" />
+              <Bars3Icon className="h-7 w-7" aria-hidden="true" />
             </button>
           </div>
           <div className="mt-16 flow-root">

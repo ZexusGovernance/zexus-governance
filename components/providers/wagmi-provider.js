@@ -9,9 +9,9 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
 
-// Явные транспорты для каждой цепи — это убирает CORS-ошибки от
-// дефолтных публичных RPC (eth.merkle.io etc) которые ненадёжны
-// и спамят консоль.
+// Explicit transports per chain — avoids CORS errors from the default
+// public providers (eth.merkle.io etc.) which are unreliable and spam the
+// browser console.
 const config = getDefaultConfig({
   appName: 'Zexus Governance',
   projectId: 'cafd0501cf9af168e43a539088ac45aa',

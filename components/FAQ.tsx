@@ -46,7 +46,7 @@ export default function FAQ() {
   return (
     <section id="faq" className="relative z-10 py-24 px-6">
       <div className="max-w-3xl mx-auto">
-        {/* Заголовок */}
+        {/* Heading */}
         <div className="text-center mb-12">
           <h2 className="text-[#E7C694] font-mono tracking-[0.4em] uppercase text-[10px] mb-4 opacity-60">
             Common Questions
@@ -56,7 +56,7 @@ export default function FAQ() {
           </p>
         </div>
 
-        {/* Аккордеон */}
+        {/* Accordion */}
         <div className="space-y-3">
           {FAQ_ITEMS.map((item, idx) => {
             const isOpen = openIndex === idx
@@ -98,7 +98,7 @@ export default function FAQ() {
                   </span>
                 </button>
 
-                {/* Ответ — animated reveal */}
+                {/* Answer — animated reveal */}
                 <div
                   className={`
                     grid transition-all duration-300 ease-out
@@ -116,7 +116,7 @@ export default function FAQ() {
           })}
         </div>
 
-        {/* Подсказка снизу */}
+        {/* Footer hint */}
         <p className="text-center text-[10px] text-gray-600 mt-10 tracking-widest uppercase">
           Have another question? Reach out on Twitter or Telegram
         </p>

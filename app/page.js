@@ -41,7 +41,7 @@ const RoadmapItem = ({
   )
 }
 
-// ─── Внутренний компонент страницы (внутри Wagmi провайдера) ─────────────────
+// ─── Inner page component (rendered inside the Wagmi provider) ──────────────
 
 function HomeContent() {
   const [notification, setNotification] = useState('')
@@ -95,7 +95,7 @@ function HomeContent() {
 
   return (
     <main className="relative min-h-screen bg-[#050505] text-white selection:bg-[#E7C694] selection:text-black font-sans overflow-x-hidden">
-      {/* Фоны */}
+      {/* Backgrounds */}
       <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <div className="relative w-full h-full opacity-[0.35] blur-[1px] scale-105 -left-[5%] md:-left-[3%]">
           <HeroCanvas />
@@ -109,14 +109,14 @@ function HomeContent() {
         }}
       ></div>
 
-      {/* Хедер */}
+      {/* Header */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90vw] max-w-5xl">
         <div className="bg-[#0A0A0A]/40 backdrop-blur-md border border-white/10 rounded-full px-8 py-2 shadow-2xl transition-all hover:border-[#E7C694]/20">
           <Header />
         </div>
       </div>
 
-      {/* Нотификация */}
+      {/* Notification */}
       {notification && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[110] animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="bg-[#1A1A1A]/90 backdrop-blur-xl border border-[#E7C694]/30 px-8 py-3 rounded-full shadow-[0_10px_40px_rgba(231,198,148,0.2)] text-[#E7C694] font-bold text-sm tracking-widest uppercase">
@@ -140,7 +140,7 @@ function HomeContent() {
             transparency. Protection for communities, power for builders.
           </p>
 
-          {/* ── Waitlist кнопка / дашборд (primary) ── */}
+          {/* ── Waitlist button / dashboard (primary) ── */}
           <div className="relative z-[20] flex flex-col items-center group/btn-container">
             <WaitlistButton
               variant="primary"
@@ -388,7 +388,7 @@ function HomeContent() {
   )
 }
 
-// ─── Главный экспорт: оборачиваем в Wagmi провайдер ─────────────────────────
+// ─── Default export: wraps the page in the Wagmi provider ───────────────────
 
 export default function Home() {
   return (

@@ -20,7 +20,7 @@ interface ReferralPanelProps {
   contractAddress?: string
 }
 
-// ─── Конфиг ────────────────────────────────────────────────────────────────
+// ─── Config ────────────────────────────────────────────────────────────────
 
 const DEFAULT_CONTRACT = '0xB6ce48D89DfDe6cF9589b8f889d6F9f05Fa07584'
 
@@ -33,7 +33,7 @@ const TIER_CONFIG: Record<Tier, { color: string; label: string; ppr: number }> =
 const SHARE_TEXT =
   'I just joined the @ZexusGovernance waitlist — the trust layer for Web3.\n\nSign up gas-free and get on the list early:'
 
-// ─── Хелперы ───────────────────────────────────────────────────────────────
+// ─── Helpers ───────────────────────────────────────────────────────────────
 
 function buildRefLink(address: string): string {
   if (typeof window === 'undefined') return `?ref=${address}`
@@ -44,7 +44,7 @@ function shortAddr(addr: string): string {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`
 }
 
-// ─── Иконки ────────────────────────────────────────────────────────────────
+// ─── Icons ─────────────────────────────────────────────────────────────────
 
 const TwitterIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -77,7 +77,7 @@ const CopyIcon = ({ checked }: { checked: boolean }) => (
   </svg>
 )
 
-// ─── Главный компонент: единый дашборд ─────────────────────────────────────
+// ─── Main component: unified dashboard ────────────────────────────────────
 
 export default function ReferralPanel({
   address,
@@ -132,10 +132,10 @@ export default function ReferralPanel({
         overflow-hidden
       "
     >
-      {/* ── Подсветка сверху ── */}
+      {/* ── Top accent line ── */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#E7C694]/40 to-transparent" />
 
-      {/* ── Header: статус + основная инфа ── */}
+      {/* ── Header: status + summary line ── */}
       <div className="px-7 py-6 border-b border-white/[0.05]">
         <div className="flex items-center gap-2 mb-2">
           <span className="relative flex h-2 w-2">
@@ -187,7 +187,7 @@ export default function ReferralPanel({
         />
       </div>
 
-      {/* ── Реф ссылка ── */}
+      {/* ── Invite link ── */}
       <div className="px-7 py-6 border-b border-white/[0.05]">
         <p className="text-[9px] tracking-[0.4em] uppercase text-gray-500 mb-3">
           Your invite link
@@ -207,7 +207,7 @@ export default function ReferralPanel({
         </div>
       </div>
 
-      {/* ── Кнопки шеринга ── */}
+      {/* ── Share buttons ── */}
       <div className="px-7 py-6 border-b border-white/[0.05]">
         <p className="text-[9px] tracking-[0.4em] uppercase text-gray-500 mb-3">
           Share & Earn
@@ -239,7 +239,7 @@ export default function ReferralPanel({
   )
 }
 
-// ─── Подкомпоненты ────────────────────────────────────────────────────────
+// ─── Subcomponents ────────────────────────────────────────────────────────
 
 function StatCard({
   label,

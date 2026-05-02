@@ -1,17 +1,17 @@
 // lib/referrals.ts
 //
-// Off-chain реферальная система. Контракт хранит сам факт подписки,
-// а очки/рефералы — здесь.
+// Off-chain referral system. The contract stores the join fact only;
+// points and referrals live here.
 //
-// На проде (Vercel) хранилище — Upstash Redis. Если переменные окружения
-// UPSTASH_REDIS_REST_URL не заданы (например, локально без БД) — fallback
-// на data/referrals.json. Это позволяет разрабатывать без локального Redis.
+// On production (Vercel) the storage is Upstash Redis. If env vars are
+// missing (e.g. local dev without a DB) it falls back to data/referrals.json.
+// This lets local development run without a Redis instance.
 
 import { promises as fs } from 'fs'
 import path from 'path'
 import { Redis } from '@upstash/redis'
 
-// ─── Типы ───────────────────────────────────────────────────────────────────
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface ReferralUser {
   address: string
@@ -29,7 +29,7 @@ export interface ReferralsData {
 
 export type Tier = 'Bronze' | 'Silver' | 'Gold'
 
-// ─── Конфиг ─────────────────────────────────────────────────────────────────
+// ─── Config ─────────────────────────────────────────────────────────────────
 
 const BASE_POINTS_FOR_JOINING = 5
 
@@ -40,11 +40,11 @@ const TIER_THRESHOLDS = {
 
 const REDIS_KEY = 'zexus:referrals'
 
-// ─── Backend выбор ──────────────────────────────────────────────────────────
+// ─── Backend selection ──────────────────────────────────────────────────────
 //
-// Поддерживаем оба именования env-переменных:
-// - UPSTASH_REDIS_REST_URL/_TOKEN — если ставил Upstash отдельно
-// - KV_REST_API_URL/_TOKEN — Vercel Marketplace integration ставит так
+// Both env-var naming conventions are supported:
+// - UPSTASH_REDIS_REST_URL/_TOKEN — manual Upstash setup
+// - KV_REST_API_URL/_TOKEN — Vercel Marketplace integration uses these
 
 const REDIS_URL =
   process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || ''
@@ -63,7 +63,7 @@ if (useRedis) {
   console.log('[referrals] Using FILE backend (no Redis env vars detected)')
 }
 
-// ─── Хелперы ────────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 const DATA_DIR = path.join(process.cwd(), 'data')
 const REFERRALS_FILE = path.join(DATA_DIR, 'referrals.json')
@@ -80,14 +80,14 @@ function pointsPerReferral(directReferralsCount: number): number {
 }
 
 async function readData(): Promise<ReferralsData> {
-  // Redis backend (на Vercel)
+  // Redis backend (production / Vercel)
   if (redis) {
     try {
       const raw = await redis.get(REDIS_KEY)
       if (!raw) return { users: {} }
 
-      // Upstash может вернуть либо уже-распаршенный объект,
-      // либо строку — обрабатываем оба случая явно
+      // Upstash may return either a parsed object or a raw string —
+      // handle both shapes explicitly.
       let data: unknown
       if (typeof raw === 'string') {
         data = JSON.parse(raw)
@@ -111,7 +111,7 @@ async function readData(): Promise<ReferralsData> {
     }
   }
 
-  // File backend (локально)
+  // File backend (local dev)
   try {
     await fs.mkdir(DATA_DIR, { recursive: true })
     const raw = await fs.readFile(REFERRALS_FILE, 'utf-8')
@@ -124,7 +124,7 @@ async function readData(): Promise<ReferralsData> {
 }
 
 async function writeData(data: ReferralsData): Promise<void> {
-  // Redis backend — явная сериализация для надёжности
+  // Redis backend — explicit serialization for reliability
   if (redis) {
     try {
       const json = JSON.stringify(data)
@@ -137,7 +137,7 @@ async function writeData(data: ReferralsData): Promise<void> {
       return
     } catch (err) {
       console.error('[referrals] Redis write FAILED:', err)
-      throw err // важно: пробрасываем ошибку чтобы route.ts вернул 500
+      throw err // important: bubble up so route.ts returns 500
     }
   }
 
@@ -154,8 +154,9 @@ async function writeData(data: ReferralsData): Promise<void> {
 // ─── API ────────────────────────────────────────────────────────────────────
 
 /**
- * Регистрирует юзера в реферальной системе.
- * Вызывается ПОСЛЕ успешной записи в контракт.
+ * Registers a user in the referral system.
+ * Must be called AFTER a successful contract write.
+ * Idempotent: if the user already exists, returns the existing record.
  */
 export async function registerUser(
   userAddress: string,
@@ -170,6 +171,7 @@ export async function registerUser(
     return { user: data.users[userKey], rewardedReferrer: null }
   }
 
+  // Self-referral and unknown-referrer protection
   const validReferrerKey =
     rawReferrerKey &&
     rawReferrerKey !== userKey &&
@@ -203,7 +205,7 @@ export async function registerUser(
 }
 
 /**
- * Возвращает статистику конкретного юзера + его позицию в очереди.
+ * Returns the user's stats and their position in the queue.
  */
 export async function getUserStats(userAddress: string): Promise<{
   exists: boolean
@@ -248,7 +250,7 @@ export async function getUserStats(userAddress: string): Promise<{
 }
 
 /**
- * Последние N подписей по времени (для live activity feed).
+ * Latest N joins by time (for the live activity feed).
  */
 export async function getRecentJoins(limit: number = 8): Promise<
   Array<{
@@ -268,7 +270,7 @@ export async function getRecentJoins(limit: number = 8): Promise<
 }
 
 /**
- * Топ-N юзеров для лидерборда. Опционально использовать позже.
+ * Top N users for the leaderboard. Optional, used later.
  */
 export async function getLeaderboard(limit: number = 10): Promise<
   Array<{

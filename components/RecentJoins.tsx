@@ -9,10 +9,10 @@ interface JoinEvent {
   blockNumber: number
 }
 
-const POLL_INTERVAL_MS = 15_000
+const POLL_INTERVAL_MS = 30_000
 const ITEMS_TO_SHOW = 6
 
-// ─── Хелпер: красивый relative time ────────────────────────────────────────
+// ─── Helper: pretty relative time ──────────────────────────────────────────
 
 function timeAgo(unixSeconds: number): string {
   const diffSec = Math.max(0, Math.floor(Date.now() / 1000) - unixSeconds)
@@ -26,21 +26,21 @@ function shortAddr(addr: string): string {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`
 }
 
-// ─── Компонент ──────────────────────────────────────────────────────────────
+// ─── Component ─────────────────────────────────────────────────────────────
 
 export default function RecentJoins() {
   const [joins, setJoins] = useState<JoinEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [, forceTick] = useState(0) // для пересчёта timeAgo каждую секунду
+  const [, forceTick] = useState(0) // re-renders every second so timeAgo updates
 
-  // Тик для обновления "23s ago" → "24s ago" без новых запросов
+  // Re-render once a second so "23s ago" → "24s ago" without re-fetching
   useEffect(() => {
     const tick = setInterval(() => forceTick((n) => n + 1), 1000)
     return () => clearInterval(tick)
   }, [])
 
-  // Поллинг каждые 15 сек
+  // Poll the API
   useEffect(() => {
     let cancelled = false
 
@@ -75,7 +75,7 @@ export default function RecentJoins() {
   return (
     <section className="relative z-10 py-20 px-6">
       <div className="max-w-xl mx-auto">
-        {/* Компактный заголовок: одна строка */}
+        {/* Compact header: single line */}
         <div className="flex items-center justify-between mb-5 px-1">
           <div className="flex items-center gap-2">
             <span className="relative flex h-1.5 w-1.5">
@@ -91,7 +91,7 @@ export default function RecentJoins() {
           </span>
         </div>
 
-        {/* Лента */}
+        {/* Feed */}
         <div className="bg-[#0A0A0A]/40 backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden">
           {loading && joins.length === 0 ? (
             <div className="px-6 py-8 text-center">
