@@ -112,8 +112,8 @@ export default function Header() {
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
       >
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-[#050505] px-6 py-6 sm:max-w-sm border-l border-white/5">
+        <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-xl" />
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-[200] w-full overflow-y-auto bg-[#050505] px-6 py-6 sm:max-w-sm border-l border-white/5">
           <div className="flex items-center justify-between">
             <Link
               href="/"

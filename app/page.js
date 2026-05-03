@@ -86,7 +86,7 @@ function HomeContent() {
 
   const socialLinks = {
     Twitter: 'https://x.com/ZexusGovernance',
-    Discord: '#',
+    Discord: 'https://discord.gg/SDUZMRP35J',
     Telegram: 'https://t.me/+-BSQtI1uNNUwNTky',
     Docs: 'https://zexus-governance.gitbook.io/whitepaper',
     Privacy: 'https://zexus-governance.gitbook.io/whitepaper/privacy-policy',
