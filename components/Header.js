@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react'
 import { Dialog } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -112,8 +112,8 @@ export default function Header() {
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
       >
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-[#050505] px-6 py-6 sm:max-w-sm border-l border-white/5">
+        <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-xl" />
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-[200] w-full overflow-y-auto bg-[#050505] px-6 py-6 sm:max-w-sm border-l border-white/5">
           <div className="flex items-center justify-between">
             <Link
               href="/"
@@ -133,11 +133,12 @@ export default function Header() {
             </Link>
             <button
               type="button"
-              className="-m-2.5 rounded-md p-2.5 text-gray-400"
+              className="-m-2.5 rounded-md p-2.5 text-[#E7C694] hover:text-white transition-colors"
               onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
             >
               <span className="sr-only">Close menu</span>
-              <XMarkIcon className="h-7 w-7" aria-hidden="true" />
+              <Bars3Icon className="h-7 w-7" aria-hidden="true" />
             </button>
           </div>
           <div className="mt-16 flow-root">
