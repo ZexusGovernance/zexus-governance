@@ -8,6 +8,7 @@ import WagmiProviderWrapper from '@/components/providers/wagmi-provider'
 import WaitlistButton from '@/components/WaitlistButton'
 import RecentJoins from '@/components/RecentJoins'
 import FAQ from '@/components/FAQ'
+import ContactEmail from '@/components/ContactEmail'
 
 const RoadmapItem = ({
   children,
@@ -306,7 +307,7 @@ function HomeContent() {
       {/* ─── FOOTER ────────────────────────────────────────────────────────────── */}
       <footer className="relative z-10 pt-16 pb-10 px-10 border-t border-white/[0.03] bg-[#080808]/30">
         <div className="max-w-[1200px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-x-3 mb-4 grayscale opacity-60 hover:opacity-100 transition-all cursor-default">
                 <Image src="/logo.png" alt="Zexus" width={24} height={24} />
@@ -365,6 +366,16 @@ function HomeContent() {
                   >
                     Terms
                   </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#E7C694] mb-4">
+                Contact
+              </h4>
+              <ul className="space-y-3 text-[10px] text-gray-500 font-bold tracking-widest">
+                <li>
+                  <ContactEmail className="hover:text-white transition-colors lowercase tracking-normal font-mono normal-case" />
                 </li>
               </ul>
             </div>
