@@ -1,13 +1,92 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { geistSans, geistMono } from './fonts'
+import { Analytics } from '@vercel/analytics/next'
+
+// ─── Site config ──────────────────────────────────────────────────────────
+//
+// SITE_URL falls back to the canonical production domain (zexus.xyz).
+// On Vercel preview deploys you can override it with NEXT_PUBLIC_SITE_URL
+// to make OG previews point to the preview URL instead.
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://zexus.xyz'
+
+const SITE_NAME = 'Zexus Governance'
+const SITE_TAGLINE = 'Verify, Don’t Trust'
+const SITE_DESCRIPTION =
+  'The decentralized trust layer for Web3 ecosystems. Verifiable accountability for projects, real voting power for communities. Join the waitlist on Base — gas-free.'
 
 export const metadata: Metadata = {
-  title: 'Zexus Governance',
-  description: 'The Hub for Web3 Ecosystems',
-  icons: {
-    icon: '/favicon.ico',
+  metadataBase: new URL(SITE_URL),
+
+  title: {
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`,
   },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    'Zexus',
+    'Web3',
+    'DAO',
+    'governance',
+    'reputation',
+    'trust',
+    'transparency',
+    'on-chain',
+    'Base',
+    'accountability',
+    'waitlist',
+  ],
+  authors: [{ name: 'Zexus' }],
+  creator: 'Zexus',
+  publisher: 'Zexus',
+
+  // Icons are auto-detected from app/icon.* and app/apple-icon.* — no manual
+  // entries needed when those files exist.
+
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    site: '@ZexusGovernance',
+    creator: '@ZexusGovernance',
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    images: ['/og-image.png'],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+  alternates: {
+    canonical: SITE_URL,
+  },
+
+  category: 'technology',
 }
 
 export default function RootLayout({
@@ -26,6 +105,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Analytics />
       </body>
     </html>
   )

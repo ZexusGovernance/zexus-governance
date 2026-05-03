@@ -1,0 +1,20 @@
+{
+  "users": {
+    "0x868a6294fd1ffc93a7c5c3a5fa34795832df21d5": {
+      "address": "0x868a6294fd1ffc93a7c5c3a5fa34795832df21d5",
+      "joinedAt": "2026-05-02T12:29:44.770Z",
+      "referrer": null,
+      "directReferrals": ["0xe762b7b90e747696ac66ec89e0ea3f479d0da30d"],
+      "points": 6,
+      "bonusFromAlphaTest": 0
+    },
+    "0xe762b7b90e747696ac66ec89e0ea3f479d0da30d": {
+      "address": "0xe762b7b90e747696ac66ec89e0ea3f479d0da30d",
+      "joinedAt": "2026-05-02T12:31:52.773Z",
+      "referrer": "0x868a6294fd1ffc93a7c5c3a5fa34795832df21d5",
+      "directReferrals": [],
+      "points": 5,
+      "bonusFromAlphaTest": 0
+    }
+  }
+}
