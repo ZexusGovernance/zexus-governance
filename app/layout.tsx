@@ -89,6 +89,28 @@ export const metadata: Metadata = {
   category: 'technology',
 }
 
+// JSON-LD structured data for legitimate crawlers (search engines,
+// listing platforms like DeBank/CoinGecko, AI agents). Email here is
+// machine-readable — spam scrapers usually ignore JSON-LD blocks.
+
+const ORGANIZATION_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE_NAME,
+  alternateName: 'Zexus',
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.png`,
+  description: SITE_DESCRIPTION,
+  email: 'zexushub@gmail.com',
+  sameAs: [
+    'https://x.com/ZexusGovernance',
+    'https://t.me/+-BSQtI1uNNUwNTky',
+    'https://discord.gg/SDUZMRP35J',
+    'https://zexus-governance.gitbook.io/whitepaper',
+    'https://github.com/ZexusGovernance/zexus-governance',
+  ],
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -106,6 +128,13 @@ export default function RootLayout({
       >
         {children}
         <Analytics />
+        {/* Structured data for crawlers / verification platforms */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(ORGANIZATION_LD),
+          }}
+        />
       </body>
     </html>
   )
