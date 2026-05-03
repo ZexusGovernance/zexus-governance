@@ -18,11 +18,14 @@ type WaitlistStatus =
 interface WaitlistButtonProps {
   variant?: 'primary' | 'secondary'
   onNotification?: (message: string) => void
+  /** Fires when the user transitions in/out of the dashboard view */
+  onSuccessStateChange?: (isSuccess: boolean) => void
 }
 
 export default function WaitlistButton({
   variant = 'primary',
   onNotification,
+  onSuccessStateChange,
 }: WaitlistButtonProps) {
   const { address, isConnected, isConnecting: isAccountConnecting } = useAccount()
   const { openConnectModal, connectModalOpen } = useConnectModal()
@@ -178,6 +181,11 @@ export default function WaitlistButton({
     status === 'signing' ||
     status === 'submitting' ||
     isConnecting
+
+  // Notify parent so the hero layout can adapt (centered → top-aligned)
+  useEffect(() => {
+    onSuccessStateChange?.(isSuccess)
+  }, [isSuccess, onSuccessStateChange])
 
   // ─── Counter + Verified badge in a single line ───────────────────────────
 

@@ -46,6 +46,7 @@ const RoadmapItem = ({
 function HomeContent() {
   const [notification, setNotification] = useState('')
   const [activeStep, setActiveStep] = useState(0)
+  const [isInWaitlist, setIsInWaitlist] = useState(false)
 
   const stepRef0 = useRef(null)
   const stepRef1 = useRef(null)
@@ -126,7 +127,13 @@ function HomeContent() {
       )}
 
       {/* ─── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-16 text-center">
+      <section
+        className={`relative z-10 flex min-h-screen flex-col items-center px-6 text-center transition-[justify-content,padding] duration-500 ${
+          isInWaitlist
+            ? 'justify-start pt-32 pb-16'
+            : 'justify-center pt-16 pb-0'
+        }`}
+      >
         <div className="w-full max-w-[1400px]">
           <h1 className="text-6xl sm:text-8xl md:text-[110px] font-black tracking-tighter mb-8 leading-[0.85] text-white">
             Verify, <br />
@@ -145,6 +152,7 @@ function HomeContent() {
             <WaitlistButton
               variant="primary"
               onNotification={showNotification}
+              onSuccessStateChange={setIsInWaitlist}
             />
 
             <div className="absolute -bottom-10 w-full h-20 bg-[#E7C694]/5 blur-[60px] rounded-full pointer-events-none"></div>
