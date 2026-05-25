@@ -18,9 +18,6 @@ export const metadata: Metadata = {
     site: '@ZexusGovernance',
   },
   robots: { index: true, follow: true },
-  other: {
-    'talentapp:project_verification': 'e6d70fa56c4ce7f53f52d148bb78ee4e4265d3f57937e09381337c6edc85ee49e074c2954f0268bf00ed5a063f4c89bf1463bc153c14fbad92a95c89f658fd6f',
-  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
