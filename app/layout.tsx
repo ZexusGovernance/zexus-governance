@@ -60,6 +60,7 @@ export const metadata: Metadata = {
     creator: '@ZexusGovernance',
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
+    images: ['/opengraph-image'],
   },
 
   robots: {
