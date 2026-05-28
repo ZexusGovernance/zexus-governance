@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zexus
 
-## Getting Started
+The trust layer for Web3, built on Base.
 
-First, run the development server:
+Zexus is a social platform where users track onchain projects, vote on milestones, and earn ZXP. Every project gets a Trust Score based on real activity, not marketing.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## What it does
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Feed** - Follow projects and see their updates in one place. Post updates, share progress, check in daily to earn ZXP.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Trust Score** - Each project gets a score based on profile completeness, audit status, update frequency, and community activity. Transparency is tracked, not assumed.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Predict** - Bet ZXP on project outcomes. Live odds, real pools, payouts to winners.
 
-## Learn More
+**Staking** - Stake ZXP to earn rewards and increase your vote power. Burn ZXP to move through Epochs and unlock permanent status: Genesis Badge, Legacy Status.
 
-To learn more about Next.js, take a look at the following resources:
+**Voting** - Vote on project milestones. Your vote weight is tied to how long you have staked.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Alerts** - Get notified when something changes on a project you follow.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ZXP
 
-## Deploy on Vercel
+ZXP is the native point system. You earn it by checking in daily, voting, and participating. You stake it for rewards and multipliers. You burn it to progress through Epochs.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Early users get better multipliers. Status earned early is kept permanently.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Access
+
+Zexus is currently invite-only. Join the waitlist at [zexus.xyz](https://zexus.xyz) or complete quests on QuestN to collect early XP.
+
+## Stack
+
+- Next.js (App Router)
+- Supabase
+- Base (via WalletConnect / Reown AppKit)
+- TypeScript
+
+## Links
+
+- App: [app.zexus.xyz](https://app.zexus.xyz)
+- Docs: [zexus-governance.gitbook.io/whitepaper](https://zexus-governance.gitbook.io/whitepaper)
+- Twitter: [@ZexusGovernance](https://twitter.com/ZexusGovernance)
