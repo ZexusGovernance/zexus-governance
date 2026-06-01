@@ -31,7 +31,8 @@ const labelCls =
 // static glow instead of an animated drop-shadow filter — smooth on mobile.
 function ScoreRing() {
   const numRef = useRef(null)
-  const arcRef = useRef(null)
+  // ring = CSS animation (GPU/browser-interpolated). number = rAF textContent
+  // only, with fixed-width tabular digits so the count-up never triggers reflow.
   useEffect(() => {
     let raf
     const start = performance.now()
@@ -40,9 +41,7 @@ function ScoreRing() {
     const tick = (now) => {
       const p = Math.min(1, (now - start) / dur)
       const e = 1 - Math.pow(1 - p, 3)
-      const val = target * e
-      if (numRef.current) numRef.current.textContent = String(Math.round(val))
-      if (arcRef.current) arcRef.current.style.strokeDashoffset = String(100 - val)
+      if (numRef.current) numRef.current.textContent = String(Math.round(target * e))
       if (p < 1) raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
@@ -57,13 +56,19 @@ function ScoreRing() {
         <svg viewBox="0 0 120 120" className="relative w-full h-full -rotate-90">
           <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
           <circle
-            ref={arcRef}
             cx="60" cy="60" r="46" fill="none" stroke="#E7C694" strokeWidth="7"
             strokeLinecap="round" pathLength="100" strokeDasharray="100" strokeDashoffset="100"
+            style={{ animation: 'ringDraw 1.1s cubic-bezier(0.215,0.61,0.355,1) forwards' }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span ref={numRef} className="text-4xl font-black text-[#E7C694] tracking-tighter">0</span>
+          <span
+            ref={numRef}
+            className="text-4xl font-black text-[#E7C694] tracking-tighter tabular-nums text-center"
+            style={{ minWidth: '2ch' }}
+          >
+            0
+          </span>
           <span className="text-[8px] font-mono text-gray-600 tracking-widest">/ 100</span>
         </div>
       </div>

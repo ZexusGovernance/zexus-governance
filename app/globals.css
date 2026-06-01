@@ -142,3 +142,8 @@ body {
   to   { transform: scaleX(1); }
 }
 
+@keyframes ringDraw {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 13; }
+}
+
