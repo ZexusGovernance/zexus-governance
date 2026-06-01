@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const STEPS = [
   {
@@ -27,8 +27,11 @@ const labelCls =
   'text-[9px] font-mono tracking-[0.3em] uppercase text-[#E7C694]/60'
 
 // ─── animated trust-score ring + count-up ──────────────────────────────────
+// Updates the DOM directly via refs (no per-frame React re-render) and uses a
+// static glow instead of an animated drop-shadow filter — smooth on mobile.
 function ScoreRing() {
-  const [v, setV] = useState(0)
+  const numRef = useRef(null)
+  const arcRef = useRef(null)
   useEffect(() => {
     let raf
     const start = performance.now()
@@ -37,7 +40,9 @@ function ScoreRing() {
     const tick = (now) => {
       const p = Math.min(1, (now - start) / dur)
       const e = 1 - Math.pow(1 - p, 3)
-      setV(target * e)
+      const val = target * e
+      if (numRef.current) numRef.current.textContent = String(Math.round(val))
+      if (arcRef.current) arcRef.current.style.strokeDashoffset = String(100 - val)
       if (p < 1) raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
@@ -47,17 +52,18 @@ function ScoreRing() {
     <div className="flex flex-col items-center justify-center h-full">
       <span className={labelCls}>Trust Score</span>
       <div className="relative w-36 h-36 mt-4">
-        <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90 overflow-visible">
+        {/* static soft glow (no per-frame filter) */}
+        <div className="absolute inset-0 m-auto w-24 h-24 rounded-full bg-[#E7C694]/20 blur-2xl pointer-events-none" />
+        <svg viewBox="0 0 120 120" className="relative w-full h-full -rotate-90">
           <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
           <circle
+            ref={arcRef}
             cx="60" cy="60" r="46" fill="none" stroke="#E7C694" strokeWidth="7"
-            strokeLinecap="round" pathLength="100" strokeDasharray="100"
-            strokeDashoffset={100 - v}
-            style={{ filter: 'drop-shadow(0 0 5px rgba(231,198,148,0.5))' }}
+            strokeLinecap="round" pathLength="100" strokeDasharray="100" strokeDashoffset="100"
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-4xl font-black text-[#E7C694] tracking-tighter">{Math.round(v)}</span>
+          <span ref={numRef} className="text-4xl font-black text-[#E7C694] tracking-tighter">0</span>
           <span className="text-[8px] font-mono text-gray-600 tracking-widest">/ 100</span>
         </div>
       </div>
