@@ -19,8 +19,8 @@ export default function Header() {
   const navigation = [
     {
       name: 'Socials',
-      href: 'https://twitter.com/ZexusGovernance',
-      external: true,
+      href: '#socials',
+      external: false,
     },
     {
       name: 'Roadmap',
@@ -52,7 +52,7 @@ export default function Header() {
               width={38}
               height={38}
               priority
-              className="h-9 w-auto object-contain transition-transform duration-500 group-hover:rotate-[360deg]"
+              className="h-9 w-auto object-contain transition-all duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:drop-shadow-[0_0_12px_rgba(231,198,148,0.7)]"
             />
             <div className="flex flex-col">
               <span className="text-sm md:text-xl font-black text-white tracking-tighter leading-none transition-colors group-hover:text-[#E7C694]">

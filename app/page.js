@@ -7,6 +7,7 @@ import Header from '@/components/Header'
 import WagmiProviderWrapper from '@/components/providers/wagmi-provider'
 import WaitlistButton from '@/components/WaitlistButton'
 import RecentJoins from '@/components/RecentJoins'
+import HowItWorks from '@/components/HowItWorks'
 import FAQ from '@/components/FAQ'
 import ContactEmail from '@/components/ContactEmail'
 
@@ -48,11 +49,16 @@ function HomeContent() {
   const [notification, setNotification] = useState('')
   const [activeStep, setActiveStep] = useState(0)
   const [isInWaitlist, setIsInWaitlist] = useState(false)
+  const [netLive, setNetLive] = useState(false)
+  const [hoveredNode, setHoveredNode] = useState(null)
+  const [bolt, setBolt] = useState({ node: null, on: false })
 
   const stepRef0 = useRef(null)
   const stepRef1 = useRef(null)
   const stepRef2 = useRef(null)
   const stepsRefs = useMemo(() => [stepRef0, stepRef1, stepRef2], [])
+  const netRef = useRef(null)
+  const boltRefs = useRef([])
 
   useEffect(() => {
     const observerOptions = {
@@ -79,6 +85,18 @@ function HomeContent() {
     return () => observer.disconnect()
   }, [stepsRefs])
 
+  useEffect(() => {
+    const el = netRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setNetLive(entry.isIntersecting),
+      { rootMargin: '-10% 0px -10% 0px', threshold: 0.15 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+
   const handleStepHover = (index) => setActiveStep(index)
 
   const showNotification = (message) => {
@@ -94,6 +112,113 @@ function HomeContent() {
     Privacy: 'https://zexus-governance.gitbook.io/whitepaper/privacy-policy',
     Terms: 'https://zexus-governance.gitbook.io/whitepaper/terms-of-service',
   }
+
+  // ─── Social constellation: 7 channel nodes orbiting the Zexus App core ──────
+  const ORBIT_R = 38 // % of container
+  const orbitNodes = useMemo(() => {
+    const items = [
+      {
+        name: 'Twitter',
+        handle: '@ZexusGovernance',
+        href: 'https://x.com/ZexusGovernance',
+        path: 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.259 5.631 5.905-5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z',
+      },
+      {
+        name: 'Discord',
+        handle: 'Community',
+        href: 'https://discord.gg/SDUZMRP35J',
+        path: 'M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z',
+      },
+      {
+        name: 'Telegram',
+        handle: 'Announcements',
+        href: 'https://t.me/+-BSQtI1uNNUwNTky',
+        path: 'M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z',
+      },
+      {
+        name: 'GitHub',
+        handle: 'Open source',
+        href: 'https://github.com/ZexusGovernance/zexus-governance',
+        path: 'M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z',
+      },
+      {
+        name: 'Farcaster',
+        handle: '@zexusgovernance',
+        href: 'https://farcaster.xyz/zexusgovernance',
+        path: 'M11.97 1.12c-5.96 0-10.8 4.84-10.8 10.8s4.84 10.8 10.8 10.8 10.8-4.84 10.8-10.8-4.84-10.8-10.8-10.8zM8.1 7.2h7.8l.54 2.34H15v5.46h1.56v1.8H7.44v-1.8H9V9.54H7.56L8.1 7.2z',
+      },
+      {
+        name: 'Paragraph',
+        handle: 'Blog & articles',
+        href: 'https://paragraph.com/@zexusgovernance',
+        path: 'M4 5h13v2H4zM4 9h13v2H4zM4 13h9v2H4zM4 17h9v2H4zM19 5h1v14h-1z',
+      },
+      {
+        name: 'Medium',
+        handle: 'Articles soon',
+        href: 'https://medium.com/@zexushub',
+        path: 'M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z',
+      },
+    ]
+    const n = items.length
+    return items.map((it, i) => {
+      const ang = (-90 + i * (360 / n)) * (Math.PI / 180)
+      const x = 50 + ORBIT_R * Math.cos(ang)
+      const y = 50 + ORBIT_R * Math.sin(ang)
+      const dx = x - 50
+      const dy = y - 50
+      const len = Math.hypot(dx, dy)
+      return { ...it, x, y, dx, dy, px: -dy / len, py: dx / len }
+    })
+  }, [])
+
+  // a few subtle twinkles (deterministic → no hydration mismatch)
+  const twinkles = useMemo(
+    () =>
+      Array.from({ length: 6 }, (_, i) => {
+        const r = (seed) => {
+          const s = Math.sin((i + 1) * seed) * 43758.5453
+          return s - Math.floor(s)
+        }
+        return {
+          x: 8 + r(12.9898) * 84,
+          y: 8 + r(78.233) * 84,
+          delay: r(3.71) * 6,
+          dur: 3.5 + r(5.13) * 3,
+          size: 1.5 + r(9.37) * 1.5,
+        }
+      }),
+    []
+  )
+
+  // live lightning: morph the bolt path each frame (~60fps) for a smooth crackle
+  useEffect(() => {
+    if (bolt.node === null) return
+    const node = orbitNodes[bolt.node]
+    let raf
+    const seg = 10
+    const loop = () => {
+      const time = performance.now()
+      let d = 'M50,50'
+      for (let k = 1; k < seg; k++) {
+        const t = k / seg
+        const bx = 50 + node.dx * t
+        const by = 50 + node.dy * t
+        const amp = 2.4 * Math.sin(t * Math.PI) // taper to 0 at both ends
+        // two layered sine waves → organic, continuous wobble (no jumps)
+        const wob =
+          amp *
+          (0.7 * Math.sin(time * 0.013 + k * 1.7) +
+            0.3 * Math.sin(time * 0.031 + k * 3.1))
+        d += ` L${(bx + node.px * wob).toFixed(2)},${(by + node.py * wob).toFixed(2)}`
+      }
+      d += ` L${node.x.toFixed(2)},${node.y.toFixed(2)}`
+      boltRefs.current.forEach((p) => p && p.setAttribute('d', d))
+      raf = requestAnimationFrame(loop)
+    }
+    loop()
+    return () => cancelAnimationFrame(raf)
+  }, [bolt.node, orbitNodes])
 
   return (
     <main className="relative min-h-screen bg-[#050505] text-white selection:bg-[#E7C694] selection:text-black font-sans overflow-x-hidden">
@@ -161,6 +286,17 @@ function HomeContent() {
         </div>
       </section>
 
+      {/* ─── LIVE RECENT JOINS (social proof, near the CTA) ──────────────────── */}
+      <RecentJoins />
+
+      {/* ─── DIVIDER ─────────────────────────────────────────────────────────── */}
+      <div className="relative z-10 flex justify-center py-4">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#E7C694]/30 to-transparent" />
+      </div>
+
+      {/* ─── WHAT IS ZEXUS (interactive) ──────────────────────────────────────── */}
+      <HowItWorks />
+
       {/* ─── DIVIDER ─────────────────────────────────────────────────────────── */}
       <div className="relative z-10 flex justify-center py-8">
         <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#E7C694]/30 to-transparent" />
@@ -169,7 +305,7 @@ function HomeContent() {
       {/* ─── ROADMAP ──────────────────────────────────────────────────────────── */}
       <section
         id="roadmap"
-        className="relative z-10 pt-24 pb-24 px-6 overflow-hidden"
+        className="relative z-10 pt-20 pb-20 px-6 overflow-hidden"
       >
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-20">
@@ -196,7 +332,7 @@ function HomeContent() {
               ></div>
             </div>
 
-            <div className="space-y-40 relative z-10">
+            <div className="space-y-24 relative z-10">
               <div ref={stepRef0} data-step="0">
                 <RoadmapItem
                   isActive={activeStep === 0}
@@ -293,16 +429,272 @@ function HomeContent() {
         <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#E7C694]/30 to-transparent" />
       </div>
 
-      {/* ─── LIVE RECENT JOINS ──────────────────────────────────────────────── */}
-      <RecentJoins />
+      {/* ─── FAQ ──────────────────────────────────────────────────────────────── */}
+      <FAQ />
 
       {/* ─── DIVIDER ─────────────────────────────────────────────────────────── */}
       <div className="relative z-10 flex justify-center py-4">
         <div className="h-px w-32 bg-gradient-to-r from-transparent via-[#E7C694]/30 to-transparent" />
       </div>
 
-      {/* ─── FAQ ──────────────────────────────────────────────────────────────── */}
-      <FAQ />
+      {/* ─── SOCIALS — orbital network ────────────────────────────────────────── */}
+      <section id="socials" className="relative z-10 pt-20 pb-24 px-6">
+        <div className="max-w-3xl mx-auto">
+
+          <div className="text-center mb-4">
+            <h2 className="text-[#E7C694] font-mono tracking-[0.4em] uppercase text-[10px] mb-3 opacity-60">
+              The Network
+            </h2>
+            <p className="text-3xl md:text-4xl font-black tracking-tighter">Community</p>
+          </div>
+
+          {/* legend */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E7C694] animate-pulse shadow-[0_0_5px_2px_rgba(231,198,148,0.4)]" />
+            <span className="text-[9px] font-mono text-gray-600 tracking-[0.25em] uppercase">
+              {hoveredNode !== null ? orbitNodes[hoveredNode].handle : '1 core · 7 channels online'}
+            </span>
+          </div>
+
+          {/* constellation */}
+          <div
+            ref={netRef}
+            className="relative w-full max-w-[520px] mx-auto aspect-square select-none"
+          >
+            {/* orbit guide rings */}
+            {[76, 56, 30].map((s, k) => (
+              <div
+                key={k}
+                className={`absolute rounded-full border border-[#E7C694]/[0.07] transition-all duration-1000 ${netLive ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
+                style={{
+                  width: `${s}%`, height: `${s}%`,
+                  left: '50%', top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  transitionDelay: `${k * 120}ms`,
+                }}
+              />
+            ))}
+
+            {/* radar sweep */}
+            <div
+              className={`absolute rounded-full pointer-events-none transition-opacity duration-1000 ${netLive ? 'opacity-100' : 'opacity-0'}`}
+              style={{
+                width: '76%', height: '76%', left: '50%', top: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'conic-gradient(from 0deg, transparent 0deg, transparent 300deg, rgba(231,198,148,0.10) 350deg, rgba(231,198,148,0.22) 360deg)',
+                animation: 'netSpin 8s linear infinite',
+                maskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
+                WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
+              }}
+            />
+
+            {/* connection lines */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {orbitNodes.map((node, i) => {
+                const active = hoveredNode === i
+                return (
+                  <line
+                    key={i}
+                    x1="50" y1="50" x2={node.x} y2={node.y}
+                    stroke={active ? 'rgba(231,198,148,0.7)' : 'rgba(231,198,148,0.18)'}
+                    strokeWidth={active ? 1.4 : 0.6}
+                    vectorEffect="non-scaling-stroke"
+                    pathLength="1"
+                    strokeDasharray="1"
+                    style={{
+                      strokeDashoffset: netLive ? 0 : 1,
+                      transition: `stroke-dashoffset 0.9s ease ${i * 90}ms, stroke 0.3s, stroke-width 0.3s`,
+                    }}
+                  />
+                )
+              })}
+            </svg>
+
+            {/* lightning bolt: slowly grows core→node on hover, slowly retracts on leave */}
+            {bolt.node !== null && (() => {
+              const anim = {
+                animation: bolt.on
+                  ? 'boltGrow 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards'
+                  : 'boltRetract 1s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+              }
+              const common = {
+                fill: 'none',
+                strokeLinecap: 'round',
+                strokeLinejoin: 'round',
+                vectorEffect: 'non-scaling-stroke',
+                pathLength: '1',
+                strokeDasharray: '1',
+              }
+              return (
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <defs>
+                    <filter id="boltGlow" x="-60%" y="-60%" width="220%" height="220%">
+                      <feGaussianBlur stdDeviation="1.6" result="b" />
+                      <feMerge>
+                        <feMergeNode in="b" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+
+                  {/* wide soft glow */}
+                  <path
+                    ref={(el) => (boltRefs.current[0] = el)} d="M50,50"
+                    stroke="rgba(231,198,148,0.5)" strokeWidth="4"
+                    filter="url(#boltGlow)" style={{ ...common, ...anim }}
+                  />
+                  {/* mid gold body */}
+                  <path
+                    ref={(el) => (boltRefs.current[1] = el)} d="M50,50"
+                    stroke="#E7C694" strokeWidth="2"
+                    style={{ ...common, ...anim }}
+                  />
+                  {/* bright white-hot core */}
+                  <path
+                    ref={(el) => (boltRefs.current[2] = el)} d="M50,50"
+                    stroke="#FFFEEF" strokeWidth="0.9"
+                    style={{ ...common, ...anim }}
+                    onAnimationEnd={() => { if (!bolt.on) setBolt({ node: null, on: false }) }}
+                  />
+                </svg>
+              )
+            })()}
+
+            {/* subtle random twinkles — client-only (avoids SSR float-precision mismatch) */}
+            {netLive &&
+              twinkles.map((t, i) => (
+                <span
+                  key={i}
+                  className="absolute rounded-full bg-[#E7C694] pointer-events-none"
+                  style={{
+                    left: `${t.x}%`, top: `${t.y}%`,
+                    width: `${t.size}px`, height: `${t.size}px`,
+                    opacity: 0,
+                    animation: `twinkle ${t.dur}s ease-in-out ${t.delay}s infinite`,
+                  }}
+                />
+              ))}
+
+            {/* radial darkening around the core so the background fades near the avatar */}
+            <div
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[58%] h-[58%] rounded-full pointer-events-none z-[15]"
+              style={{
+                background:
+                  'radial-gradient(circle, #050505 28%, rgba(5,5,5,0.85) 50%, rgba(5,5,5,0.4) 68%, transparent 82%)',
+              }}
+            />
+
+            {/* orbit nodes */}
+            {orbitNodes.map((node, i) => {
+              const active = hoveredNode === i
+              return (
+                <a
+                  key={node.name}
+                  href={node.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onMouseEnter={() => { setHoveredNode(i); setBolt({ node: i, on: true }) }}
+                  onMouseLeave={() => { setHoveredNode(null); setBolt(b => ({ ...b, on: false })) }}
+                  className="group absolute z-20 flex flex-col items-center"
+                  style={{
+                    left: `${node.x}%`, top: `${node.y}%`,
+                    transform: `translate(-50%, -50%) scale(${netLive ? 1 : 0})`,
+                    opacity: netLive ? 1 : 0,
+                    transition: `transform 0.6s cubic-bezier(0.34,1.56,0.64,1) ${i * 80 + 300}ms, opacity 0.6s ${i * 80 + 300}ms`,
+                  }}
+                >
+                  <div
+                    className={`relative w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center border backdrop-blur-sm transition-all duration-300 ${
+                      active
+                        ? 'border-[#E7C694]/60 bg-[#E7C694]/[0.12] scale-110 shadow-[0_0_24px_-2px_rgba(231,198,148,0.5)]'
+                        : 'border-white/10 bg-[#0A0A0A]/80'
+                    }`}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className={`w-5 h-5 md:w-6 md:h-6 transition-colors duration-300 ${active ? 'text-[#E7C694]' : 'text-gray-500'}`}
+                      fill="currentColor"
+                    >
+                      <path d={node.path} />
+                    </svg>
+                  </div>
+                  <span
+                    className={`mt-2 text-[8px] md:text-[9px] font-mono uppercase tracking-[0.15em] transition-colors duration-300 whitespace-nowrap ${active ? 'text-[#E7C694]' : 'text-gray-600'}`}
+                  >
+                    {node.name}
+                  </span>
+                </a>
+              )
+            })}
+
+            {/* central core — Zexus App (circle centered exactly at 50/50) */}
+            <a
+              href="https://app.zexus.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              onMouseEnter={() => setHoveredNode(null)}
+              className="group absolute left-1/2 top-1/2 z-40 -translate-x-1/2 -translate-y-1/2 w-[88px] h-[88px] md:w-[108px] md:h-[108px]"
+            >
+              {/* breathing glow halo */}
+              <span
+                className="absolute inset-0 rounded-full bg-[#E7C694]/20 blur-xl"
+                style={{ animation: 'corePulse 3.5s ease-in-out infinite' }}
+              />
+
+              {/* rotating conic energy ring */}
+              <span
+                className="absolute inset-[-14%] rounded-full"
+                style={{
+                  background:
+                    'conic-gradient(from 0deg, transparent 0deg, rgba(231,198,148,0.55) 60deg, transparent 130deg, transparent 230deg, rgba(231,198,148,0.4) 290deg, transparent 360deg)',
+                  WebkitMask: 'radial-gradient(closest-side, transparent 71%, #000 73%)',
+                  mask: 'radial-gradient(closest-side, transparent 71%, #000 73%)',
+                  animation: 'coreSpin 5s linear infinite',
+                }}
+              />
+
+              {/* counter-rotating dashed ring */}
+              <span
+                className="absolute inset-[-3px] rounded-full border border-dashed border-[#E7C694]/20"
+                style={{ animation: 'coreSpinRev 16s linear infinite' }}
+              />
+
+              {/* orbiting satellite dot */}
+              <span
+                className="absolute inset-[-20%]"
+                style={{ animation: 'coreSpin 7s linear infinite' }}
+              >
+                <span className="absolute left-1/2 top-0 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#FFFEEF] shadow-[0_0_8px_2px_rgba(231,198,148,0.7)]" />
+              </span>
+
+              {/* the core circle */}
+              <div className="relative w-full h-full rounded-full flex items-center justify-center border-2 border-[#E7C694]/40 bg-gradient-to-br from-[#E7C694]/[0.18] to-[#0A0A0A] shadow-[0_0_40px_-5px_rgba(231,198,148,0.4)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_0_55px_-2px_rgba(231,198,148,0.6)] group-hover:border-[#E7C694]/70">
+                <Image
+                  src="/logo.png"
+                  alt="Zexus"
+                  width={44}
+                  height={44}
+                  className="opacity-90 drop-shadow-[0_0_10px_rgba(231,198,148,0.4)] transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_16px_rgba(231,198,148,0.7)]"
+                />
+              </div>
+
+              {/* label — kept on the front plane, above the lightning */}
+              <div className="absolute top-full left-1/2 z-50 -translate-x-1/2 mt-3 flex flex-col items-center gap-1.5 whitespace-nowrap [text-shadow:0_2px_10px_rgba(0,0,0,0.95)]">
+                <span className="text-[11px] md:text-xs font-black uppercase tracking-[0.2em] text-[#E7C694]">Zexus App</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[7px] font-mono tracking-[0.15em] uppercase px-1.5 py-px border border-[#E7C694]/40 bg-[#0A0A0A]/70 text-[#E7C694]/80 backdrop-blur-sm">Alpha</span>
+                  <span className="text-[7px] font-mono tracking-[0.15em] uppercase px-1.5 py-px border border-[#E7C694]/25 bg-[#0A0A0A]/70 text-[#E7C694]/55 backdrop-blur-sm">Invite Code</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <p className="text-center text-[9px] font-mono text-gray-700 tracking-[0.2em] uppercase mt-6">
+            Tap a node to connect
+          </p>
+
+        </div>
+      </section>
 
       {/* ─── FOOTER ────────────────────────────────────────────────────────────── */}
       <footer className="relative z-10 pt-16 pb-10 px-10 border-t border-white/[0.03] bg-[#080808]/30">
@@ -335,6 +727,14 @@ function HomeContent() {
                 </li>
                 <li>
                   <a
+                    href="#socials"
+                    className="hover:text-white transition-colors"
+                  >
+                    Socials
+                  </a>
+                </li>
+                <li>
+                  <a
                     href={socialLinks.Docs}
                     target="_blank"
                     className="hover:text-white transition-colors"
@@ -351,8 +751,7 @@ function HomeContent() {
               <ul className="space-y-3 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                 <li>
                   <a
-                    href={socialLinks.Privacy}
-                    target="_blank"
+                    href="/privacy"
                     className="hover:text-white transition-colors"
                   >
                     Privacy
@@ -360,8 +759,7 @@ function HomeContent() {
                 </li>
                 <li>
                   <a
-                    href={socialLinks.Terms}
-                    target="_blank"
+                    href="/terms"
                     className="hover:text-white transition-colors"
                   >
                     Terms

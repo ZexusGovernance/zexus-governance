@@ -95,3 +95,50 @@ body {
 .animate-pulse-slow {
   animation: pulse-slow 8s ease-in-out infinite;
 }
+
+@keyframes netSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.6); }
+  50%      { opacity: 0.7; transform: scale(1); }
+}
+
+@keyframes boltGrow {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes boltRetract {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 1; }
+}
+
+@keyframes coreSpin    { to { transform: rotate(360deg); } }
+@keyframes coreSpinRev { to { transform: rotate(-360deg); } }
+
+@keyframes corePulse {
+  0%, 100% { transform: scale(1);    opacity: 0.45; }
+  50%      { transform: scale(1.12); opacity: 0.85; }
+}
+
+@keyframes joinScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.join-marquee { animation: joinScroll 40s linear infinite; }
+.join-marquee:hover { animation-play-state: paused; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleXIn {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+

@@ -52,7 +52,12 @@ export default function RecentJoins() {
         if (data.error) {
           setError(data.error)
         } else if (Array.isArray(data.joins)) {
-          setJoins(data.joins)
+          // newest first
+          setJoins(
+            [...data.joins].sort(
+              (a: JoinEvent, b: JoinEvent) => b.timestamp - a.timestamp,
+            ),
+          )
           setError(null)
         }
       } catch (e: unknown) {
@@ -72,92 +77,68 @@ export default function RecentJoins() {
     }
   }, [])
 
+  // one entry rendered inline for the moving line
+  const renderItem = (join: JoinEvent, key: string) => (
+    <a
+      key={key}
+      href={`https://basescan.org/address/${join.participant}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group inline-flex items-center gap-2.5 mx-6 align-middle"
+    >
+      <span
+        className="w-5 h-5 rounded-full flex-shrink-0 border border-white/10"
+        style={{
+          background: `linear-gradient(135deg, #${join.participant.slice(2, 8)}, #${join.participant.slice(-6)})`,
+        }}
+      />
+      <span className="text-xs font-mono text-gray-300 group-hover:text-[#E7C694] transition-colors">
+        {shortAddr(join.participant)}
+      </span>
+      <span className="text-[9px] tracking-[0.2em] uppercase text-gray-600">
+        joined · {timeAgo(join.timestamp)}
+      </span>
+      {/* separator */}
+      <span className="ml-6 w-1 h-1 rounded-full bg-[#E7C694]/30" />
+    </a>
+  )
+
   return (
-    <section className="relative z-10 py-20 px-6">
-      <div className="max-w-xl mx-auto">
-        {/* Compact header: single line */}
-        <div className="flex items-center justify-between mb-5 px-1">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-400" />
-            </span>
-            <span className="text-[9px] tracking-[0.4em] uppercase text-green-400/70 font-mono">
-              Live · On-chain
-            </span>
-          </div>
-          <span className="text-[9px] tracking-[0.3em] uppercase text-gray-600">
-            Recent joins on Base
+    <section className="relative z-10 py-16 px-6">
+      <div className="max-w-2xl mx-auto">
+        {/* Compact header: centered live indicator */}
+        <div className="flex items-center justify-center gap-2 mb-5">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-400" />
+          </span>
+          <span className="text-[9px] tracking-[0.4em] uppercase text-green-400/70 font-mono">
+            Live · Recent joins on Base
           </span>
         </div>
 
-        {/* Feed */}
-        <div className="bg-[#0A0A0A]/40 backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden">
-          {loading && joins.length === 0 ? (
-            <div className="px-6 py-8 text-center">
-              <span className="text-xs text-gray-500 tracking-widest uppercase">
-                Loading events...
-              </span>
+        {/* Moving line with grey edge fade */}
+        {loading && joins.length === 0 ? (
+          <p className="text-center text-xs text-gray-500 tracking-widest uppercase">
+            Loading events...
+          </p>
+        ) : error ? (
+          <p className="text-center text-xs text-red-400/70 tracking-widest uppercase">
+            {error}
+          </p>
+        ) : joins.length === 0 ? (
+          <p className="text-center text-xs text-gray-500 tracking-widest uppercase">
+            No joins in the last hour · Be the first ✨
+          </p>
+        ) : (
+          <div className="marquee-container">
+            <div className="join-marquee inline-flex w-max items-center whitespace-nowrap">
+              {/* rendered twice for a seamless loop */}
+              {joins.map((j) => renderItem(j, `a-${j.participant}`))}
+              {joins.map((j) => renderItem(j, `b-${j.participant}`))}
             </div>
-          ) : error ? (
-            <div className="px-6 py-8 text-center">
-              <span className="text-xs text-red-400/70 tracking-widest uppercase">
-                {error}
-              </span>
-            </div>
-          ) : joins.length === 0 ? (
-            <div className="px-6 py-8 text-center">
-              <span className="text-xs text-gray-500 tracking-widest uppercase">
-                No joins in the last hour · Be the first ✨
-              </span>
-            </div>
-          ) : (
-            <ul>
-              {joins.map((join, idx) => (
-                <li
-                  key={join.participant}
-                  className={`
-                    flex items-center justify-between px-5 py-3
-                    ${idx !== joins.length - 1 ? 'border-b border-white/[0.03]' : ''}
-                    transition-colors hover:bg-white/[0.02]
-                  `}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className="w-6 h-6 rounded-full flex-shrink-0 border border-white/10"
-                      style={{
-                        background: `linear-gradient(135deg, #${join.participant.slice(2, 8)}, #${join.participant.slice(-6)})`,
-                      }}
-                    />
-                    <a
-                      href={`https://basescan.org/address/${join.participant}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-mono text-gray-300 hover:text-[#E7C694] transition-colors truncate"
-                    >
-                      {shortAddr(join.participant)}
-                    </a>
-                  </div>
-
-                  {join.txHash ? (
-                    <a
-                      href={`https://basescan.org/tx/${join.txHash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[9px] tracking-widest uppercase text-gray-600 hover:text-[#E7C694] transition-colors flex-shrink-0 ml-3"
-                    >
-                      {timeAgo(join.timestamp)} ↗
-                    </a>
-                  ) : (
-                    <span className="text-[9px] tracking-widest uppercase text-gray-600 flex-shrink-0 ml-3">
-                      {timeAgo(join.timestamp)}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   )

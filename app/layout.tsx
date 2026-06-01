@@ -14,13 +14,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://zexus.xyz'
 const SITE_NAME = 'Zexus Governance'
 const SITE_TAGLINE = 'Verify, Don’t Trust'
 const SITE_DESCRIPTION =
-  'The decentralized trust layer for Web3 ecosystems. Verifiable accountability for projects, real voting power for communities. Join the waitlist on Base — gas-free.'
+  'The decentralized trust layer for Web3 ecosystems. Verifiable accountability for projects, real voting power for communities. Join the waitlist on Base, gas-free.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    default: `${SITE_NAME}: ${SITE_TAGLINE}`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    title: `${SITE_NAME}: ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
   },
 
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@ZexusGovernance',
     creator: '@ZexusGovernance',
-    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    title: `${SITE_NAME}: ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
     images: ['/opengraph-image'],
   },
@@ -114,7 +114,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable} scroll-smooth`}
       suppressHydrationWarning
     >
       <body
