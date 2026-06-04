@@ -14,22 +14,74 @@ import Image from 'next/image'
 
 const SECTIONS = [
   {
-    id: 'economy',
-    title: 'ZXP Economy & Epochs',
+    id: 'vision',
+    title: 'Vision',
     blocks: [
       {
         t: 'p',
-        text: 'ZXP is the off-chain governance and reputation credit that powers Zexus. It is not an inflationary point system - ZXP is designed to be used, not hoarded. Unused balances of inactive participants decay at the end of each epoch, while active governors keep everything they earn.',
+        text: 'Web3 runs on promises. Projects ship roadmaps, hype launches, and announce milestones - but the people deciding whether to trust them have almost nothing verifiable to go on. Reputation is built from marketing and follower counts, not from delivery. The result is predictable: abandoned projects, broken promises, and communities that find out too late.',
       },
-      { t: 'h3', text: 'Epochs' },
+      {
+        t: 'p',
+        text: 'Zexus is an accountability layer for onchain projects. Every project carries a Trust Score built from real, auditable signals and adjusted by community votes on the milestones it actually delivers. Around that sits a social feed, watchlists, alerts, and prediction markets - so tracking a project, holding it accountable, and acting on what you learn all happen in one place.',
+      },
+      {
+        t: 'p',
+        text: 'ZXP, the platform points system, aligns everyone around honest participation: you earn it by contributing, stake it to weight your governance voice, and burn it as skin in the game when you vote or raise an alarm. Reputation on Zexus has to be earned and spent - it cannot be bought.',
+      },
+    ],
+  },
+  {
+    id: 'zxp-points',
+    title: 'ZXP - Points, Not a Token',
+    blocks: [
+      {
+        t: 'callout',
+        text: 'ZXP is a points system, not a cryptocurrency. It is not a token. It has no monetary value, is not for sale, and cannot be bought, traded, withdrawn, or exchanged for money or crypto. ZXP exists only inside Zexus as a measure of reputation and governance weight.',
+      },
+      { t: 'h3', text: 'Off-chain by design' },
+      {
+        t: 'p',
+        text: 'ZXP balances live in the Zexus database, not on a blockchain. There is no ZXP contract address, no liquidity pool, and no market. "Staking" and "burning" ZXP are internal accounting actions - they move points between states in our system; they are not onchain transactions and they never touch your wallet balance.',
+      },
+      { t: 'h3', text: 'What your wallet is for' },
+      {
+        t: 'p',
+        text: 'Your wallet is used only for identity: you sign in with it (Sign-In With Ethereum) so your reputation is tied to one account. Signing in costs nothing and never moves funds. ZXP itself stays entirely off-chain.',
+      },
+      { t: 'h3', text: 'A balanced economy: faucets and sinks' },
+      {
+        t: 'p',
+        text: 'ZXP is designed to circulate, not pile up. It enters through participation (faucets) and leaves through use and inactivity (sinks), which keeps the system from inflating into meaninglessness.',
+      },
+      {
+        t: 'table',
+        head: ['Faucets (ZXP in)', 'Sinks (ZXP out)'],
+        rows: [
+          ['Onboarding & daily check-ins', 'Casting governance votes (burned)'],
+          ['Staking rewards (APY)', 'Predict market fee (2%, burned)'],
+          ['Referrals', 'Emergency Call contributions'],
+          ['Predict wins', 'End-of-epoch decay on inactivity'],
+        ],
+      },
+      {
+        t: 'callout',
+        text: 'On the future: the roadmap mentions a future onchain "Points Engine". To be explicit - today\'s ZXP points are not that system and grant no claim, guarantee, airdrop, or entitlement to any future token. Anything onchain, if it ever ships, would be announced separately with its own terms.',
+      },
+    ],
+  },
+  {
+    id: 'epochs',
+    title: 'Epochs & Anti-Inflation',
+    blocks: [
       {
         t: 'p',
         text: 'The protocol runs in 6-month epochs. A daily maintenance job (03:00 UTC) recalculates the staking APY and, when an epoch closes, applies a tiered retention burn before automatically advancing to the next epoch.',
       },
-      { t: 'h3', text: 'Tiered retention (anti-inflation)' },
+      { t: 'h3', text: 'Tiered retention' },
       {
         t: 'p',
-        text: 'At epoch end, each wallet’s free (unstaked) ZXP is retained based on the activity it showed during the epoch:',
+        text: 'At epoch end, each wallet\'s free (unstaked) ZXP is retained based on the activity it showed during the epoch. Hoarding without participating costs you; staying active costs you nothing.',
       },
       {
         t: 'table',
@@ -42,7 +94,7 @@ const SECTIONS = [
       },
       {
         t: 'p',
-        text: 'Staked ZXP is never decayed - staking is itself proof of commitment. The burned amount is recorded on each profile’s lifetime ZXP burned counter, which drives Burn Ranks.',
+        text: 'Staked ZXP is never decayed - staking is itself proof of commitment. The burned amount is added to each profile\'s lifetime ZXP burned counter, which drives Burn Ranks.',
       },
       { t: 'h3', text: 'Dynamic APY' },
       {
@@ -51,7 +103,7 @@ const SECTIONS = [
       },
       {
         t: 'callout',
-        text: 'Effective APY = base APY (≤ 8%) + active Community Burn Pool bonus.',
+        text: 'Effective APY = base APY (up to 8%) + active Community Burn Pool bonus.',
       },
     ],
   },
@@ -68,16 +120,16 @@ const SECTIONS = [
         t: 'table',
         head: ['Position age', 'APY multiplier', 'Vote-power multiplier'],
         rows: [
-          ['< 30 days', '1.00×', '1.00×'],
-          ['≥ 30 days', '1.05×', '1.20×'],
-          ['≥ 90 days', '1.10×', '1.50×'],
-          ['≥ 180 days', '1.20×', '1.80×'],
-          ['≥ 365 days', '1.35×', '2.20×'],
+          ['< 30 days', '1.00x', '1.00x'],
+          ['>= 30 days', '1.05x', '1.20x'],
+          ['>= 90 days', '1.10x', '1.50x'],
+          ['>= 180 days', '1.20x', '1.80x'],
+          ['>= 365 days', '1.35x', '2.20x'],
         ],
       },
       {
         t: 'p',
-        text: 'Rewards accrue continuously (fractional drip, down to 4 decimals) so even small positions visibly earn over time. Unstaking is subject to a cooldown window before the principal becomes withdrawable.',
+        text: 'Rewards accrue continuously (fractional drip, down to 4 decimals) so even small positions visibly earn over time. Unstaking is subject to a cooldown window before the principal becomes available again.',
       },
     ],
   },
@@ -87,17 +139,17 @@ const SECTIONS = [
     blocks: [
       {
         t: 'p',
-        text: 'Zexus governance is built around milestone confirmation. Projects post claims (e.g. “shipped X”, “hit milestone Y”); the community confirms or disputes them, and the weighted outcome moves the project’s Trust Score.',
+        text: 'Zexus governance is built around milestone confirmation. Projects post claims (e.g. "shipped X", "hit milestone Y"); the community confirms or disputes them, and the weighted outcome moves the project\'s Trust Score. Governance today is scoped to project accountability - it is not protocol treasury or parameter voting.',
       },
       { t: 'h3', text: 'Vote weight formula' },
-      { t: 'formula', code: 'vote_weight = √(staked ZXP) × time_bonus' },
+      { t: 'formula', code: 'vote_weight = sqrt(staked ZXP) x time_bonus' },
       {
         t: 'p',
-        text: 'The square root deliberately softens whale dominance - doubling your stake does not double your vote. time_bonus follows the staking age multipliers (1.0× → 2.2× from <30d to ≥365d), so conviction over time is rewarded.',
+        text: 'The square root deliberately softens whale dominance - doubling your stake does not double your vote. time_bonus follows the staking age multipliers (1.0x up to 2.2x from <30d to >=365d), so conviction over time is rewarded.',
       },
       {
         t: 'p',
-        text: 'To prevent gaming, the time bonus uses the amount-weighted average age across all of a wallet’s positions - you cannot anchor one tiny old position to boost a large fresh stake.',
+        text: 'To prevent gaming, the time bonus uses the amount-weighted average age across all of a wallet\'s positions - you cannot anchor one tiny old position to boost a large fresh stake.',
       },
       { t: 'h3', text: 'Eligibility & cost' },
       {
@@ -112,7 +164,7 @@ const SECTIONS = [
       },
       {
         t: 'p',
-        text: 'Votes are confirm or dispute. Voting posts auto-finalize at their deadline, and the weighted result feeds directly into the project’s Trust Score.',
+        text: 'Votes are confirm or dispute. Voting posts auto-finalize at their deadline, and the weighted result feeds directly into the project\'s Trust Score.',
       },
     ],
   },
@@ -122,15 +174,33 @@ const SECTIONS = [
     blocks: [
       {
         t: 'p',
-        text: 'Every project carries a Trust Score (capped at 110) - a living reputation number rather than a static rating. It moves through the governance cycle:',
+        text: 'Every project carries a Trust Score from 0 to 110 - a living reputation number rather than a static rating. It has two parts: a baseline built from verifiable signals, and an ongoing adjustment driven by community milestone votes.',
+      },
+      { t: 'h3', text: 'Baseline: six weighted categories' },
+      {
+        t: 'p',
+        text: 'The baseline scores transparency and traction across six categories, each capped so no single dimension can dominate. GitHub activity is pulled live from the GitHub API; the rest is evidence-based and auditable.',
       },
       {
+        t: 'table',
+        head: ['Category', 'Max', 'Signals'],
+        rows: [
+          ['Social Presence', '25', 'Twitter followers, Discord members, GitHub commits (30d)'],
+          ['Product & Tech', '25', 'Product stage (testnet/mainnet), whitepaper, audit'],
+          ['On-chain Activity', '20', 'Holder wallets, TVL'],
+          ['Team & Backing', '15', 'Doxxed team, investors'],
+          ['Track Record', '15', 'Contract age, partnerships'],
+          ['Bonus Signals', '10', 'CEX listing, grants, media, hackathon wins, integrations'],
+        ],
+      },
+      { t: 'h3', text: 'Ongoing: the community cycle' },
+      {
         t: 'formula',
-        code: 'milestone claim → community vote → Trust Score update → public timeline',
+        code: 'milestone claim -> community vote (confirm / dispute) -> Trust Score update -> public timeline',
       },
       {
         t: 'p',
-        text: 'Confirmed milestones raise the score; disputed or failed ones lower it. Each project exposes a Trust Timeline so the full history of movements is auditable.',
+        text: 'Confirmed milestones raise the score; disputed or failed ones lower it. Every movement is recorded on the project\'s Trust Timeline, so the full history is auditable rather than a black box.',
       },
     ],
   },
@@ -152,7 +222,7 @@ const SECTIONS = [
       },
       {
         t: 'formula',
-        code: 'payout = (your_bet / winning_pool) × (total_pool - 2% fee)',
+        code: 'payout = (your_bet / winning_pool) x (total_pool - 2% fee)',
       },
       {
         t: 'p',
@@ -181,7 +251,7 @@ const SECTIONS = [
       },
       {
         t: 'p',
-        text: 'All amounts scale with an admin-controlled factor, so thresholds can be tuned as ZXP velocity changes without a code change. Watchers of the targeted project are notified (e.g. via Telegram) when a call opens.',
+        text: 'All amounts scale with an admin-controlled factor, so thresholds can be tuned as ZXP activity changes without a code change. Watchers of the targeted project are notified (e.g. via Telegram) when a call opens.',
       },
     ],
   },
@@ -205,7 +275,7 @@ const SECTIONS = [
       },
       {
         t: 'p',
-        text: 'The pool resets at the start of each calendar month. Epoch-end decay burns are excluded, so the pool reflects genuine activity. This turns burning ZXP from a purely individual cost into a positive-sum, cooperative game.',
+        text: 'The pool resets at the start of each calendar month. End-of-epoch decay burns are excluded, so the pool reflects genuine activity. This turns burning ZXP from a purely individual cost into a positive-sum, cooperative game.',
       },
     ],
   },
@@ -229,7 +299,7 @@ const SECTIONS = [
     blocks: [
       {
         t: 'p',
-        text: 'A wallet’s lifetime ZXP burned earns a permanent rank badge, displayed on the profile. Burning is the truest signal of conviction, so it is what ranks reflect:',
+        text: 'A wallet\'s lifetime ZXP burned earns a permanent rank badge, displayed on the profile. Burning is the truest signal of conviction, so it is what ranks reflect:',
       },
       {
         t: 'table',
@@ -249,7 +319,7 @@ const SECTIONS = [
     blocks: [
       {
         t: 'p',
-        text: 'ZXP enters circulation through participation, not purchase:',
+        text: 'ZXP enters circulation through participation, never purchase:',
       },
       {
         t: 'table',
@@ -261,7 +331,7 @@ const SECTIONS = [
           ['Add to watchlist (onboarding)', '1 ZXP'],
           ['Daily check-in', '1 ZXP / day'],
           ['Successful referral', '5 ZXP'],
-          ['Staking rewards', 'Dynamic APY (≤ 8% + Burn Pool bonus)'],
+          ['Staking rewards', 'Dynamic APY (up to 8% + Burn Pool bonus)'],
           ['Predict win', 'Pro-rata share of the prize pool'],
         ],
       },
@@ -272,16 +342,124 @@ const SECTIONS = [
     ],
   },
   {
-    id: 'platform',
-    title: 'Platform & Security',
+    id: 'sybil',
+    title: 'Sybil Resistance & Anti-Abuse',
+    blocks: [
+      {
+        t: 'p',
+        text: 'Because reputation is the product, resisting fake accounts and farming matters more than almost anything else. Zexus layers several defenses:',
+      },
+      {
+        t: 'list',
+        items: [
+          'No cash incentive: ZXP has no monetary value and cannot be sold, which removes the core reason to farm it at scale.',
+          'Square-root vote weighting: splitting a stake across many wallets yields less total power than keeping it together, so Sybil swarms are penalized by design.',
+          'Voting gates: a minimum of 10 ZXP staked plus a 48-hour account age is required before a wallet can vote.',
+          'Skin in the game: each first-time vote burns 1 ZXP, so spamming votes has a real cost.',
+          'Anti-anchoring: vote weight uses the amount-weighted average age of all positions, so an old dust position cannot juice a fresh whale stake.',
+          'One-time, time-boxed onboarding: onboarding rewards pay once and only within the first 7 days; the daily check-in is capped at 1 ZXP per day.',
+          'Invite-code gating during early access limits how fast new accounts can appear.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'architecture',
+    title: 'Architecture & Security',
+    blocks: [
+      {
+        t: 'p',
+        text: 'Zexus is a web application, not a smart-contract protocol. The split between off-chain and onchain is intentional and explicit:',
+      },
+      {
+        t: 'table',
+        head: ['Layer', 'Where it lives'],
+        rows: [
+          ['ZXP points, staking, votes, posts, projects, Trust Scores', 'Off-chain (Supabase / Postgres)'],
+          ['Wallet identity (Sign-In With Ethereum)', 'Base'],
+          ['Waitlist contract', 'Base'],
+        ],
+      },
+      { t: 'h3', text: 'Security' },
+      {
+        t: 'list',
+        items: [
+          'SIWE authentication: actions are signed with the wallet, and the server derives the acting address from the verified session - never from request bodies.',
+          'Admin and write routes are guarded server-side.',
+          'Telegram notifications: opt-in alerts for ZXP earned, Emergency Calls, Predict wins, and watched-project activity.',
+          'Invite-code gating during the early access phase.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'roadmap',
+    title: 'Roadmap',
+    blocks: [
+      { t: 'h3', text: 'Q2 - The Genesis & Alpha' },
+      {
+        t: 'list',
+        items: [
+          'Official announcement and waitlist open',
+          'Genesis Program onboarding (10 founding projects)',
+          'Alpha: Voting, Trust Score, MVP',
+          'Sybil filter and reputation integration',
+        ],
+      },
+      { t: 'h3', text: 'Q3 - Growth & Mainnet' },
+      {
+        t: 'list',
+        items: [
+          'Public mainnet launch (Base / Arbitrum)',
+          'Zexus Points Engine (ZXP) full launch',
+          'Genesis Tier: Wave 2 projects',
+        ],
+      },
+      { t: 'h3', text: 'Q4 - Global Expansion' },
+      {
+        t: 'list',
+        items: [
+          'Advanced governance and DAO delegate tools',
+          'Zexus Analytics API for launchpads',
+          'Sleuth partnership: onchain detectives',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'risks',
+    title: 'Risks & Disclaimers',
     blocks: [
       {
         t: 'list',
         items: [
-          'SIWE wallet authentication - actions are signed with the wallet; the server derives the acting address from the verified session, never from request bodies.',
-          'Telegram notifications - opt-in alerts for ZXP earned, Emergency Calls, Predict wins, and watched-project activity.',
-          'Invite-code gating - onboarding is gated behind invite codes during the early access phase.',
-          'Achievements & badges, daily check-in streaks, and referrals drive retention and reward sustained participation.',
+          'Alpha software: Zexus is in active development, provided "as is" without warranties. Features, parameters, and balances may change or be reset.',
+          'ZXP has no monetary value: it is a points system, not a token or investment. Nothing in this document is financial, legal, or investment advice.',
+          'No entitlement: holding ZXP grants no claim, airdrop, or right to any current or future onchain token.',
+          'Trust Score is informational: it is a community and evidence-based signal, not an endorsement, guarantee, or recommendation. Always do your own research.',
+          'Wallet responsibility: you are responsible for the security of your wallet and keys. Onchain transactions cannot be reversed.',
+          'Jurisdiction: you are responsible for ensuring your use of Zexus complies with your local laws. See the Terms of Service.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'glossary',
+    title: 'Glossary',
+    blocks: [
+      {
+        t: 'table',
+        head: ['Term', 'Meaning'],
+        rows: [
+          ['ZXP', 'Off-chain reputation and governance points. Not a token, no monetary value.'],
+          ['Trust Score', 'A 0-110 project reputation number from verifiable signals plus community votes.'],
+          ['Epoch', 'A 6-month cycle; ends with a tiered retention burn.'],
+          ['Power Vote', 'A governance vote weighted by sqrt(stake) x time bonus.'],
+          ['Burn', 'Permanently removing ZXP from a balance.'],
+          ['Season', 'A monthly leaderboard of ZXP earned.'],
+          ['Milestone', 'A project claim the community confirms or disputes.'],
+          ['Emergency Call', 'A community-funded alarm raised against a project.'],
+          ['SIWE', 'Sign-In With Ethereum - wallet-based login.'],
         ],
       },
     ],
@@ -329,7 +507,7 @@ function Block({ block }) {
     case 'callout':
       return (
         <div className="my-6 px-5 py-4 rounded-xl border-l-2 border-[#E7C694]/50 bg-white/[0.02]">
-          <p className="text-sm md:text-base text-gray-300 leading-relaxed font-light italic">
+          <p className="text-sm md:text-base text-gray-300 leading-relaxed font-light">
             {block.text}
           </p>
         </div>
@@ -431,7 +609,7 @@ export default function Whitepaper() {
             href="/"
             className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400 hover:text-[#E7C694] transition-colors"
           >
-            ← Back
+            Back
           </Link>
         </div>
       </header>
@@ -446,7 +624,7 @@ export default function Whitepaper() {
             The Trust Layer for Web3
           </h1>
           <p className="text-base text-gray-400 leading-relaxed font-light max-w-2xl">
-            Zexus is a social governance protocol where the community tracks
+            Zexus is a social accountability platform where the community tracks
             onchain projects, votes on milestones, and earns ZXP. Every project
             gets a Trust Score based on real activity, not marketing.
           </p>
@@ -499,7 +677,7 @@ export default function Whitepaper() {
             ))}
 
             <p className="text-[10px] font-mono text-gray-600 tracking-wide uppercase">
-              Reflects protocol mechanics as of June 2026 · Alpha v1.0
+              Reflects protocol mechanics as of June 2026 - Alpha v1.0
             </p>
           </article>
         </div>
@@ -515,7 +693,7 @@ export default function Whitepaper() {
             href="/"
             className="text-[9px] tracking-[0.3em] text-gray-500 uppercase font-bold hover:text-[#E7C694] transition-colors"
           >
-            ← Back to home
+            Back to home
           </Link>
         </div>
       </footer>
