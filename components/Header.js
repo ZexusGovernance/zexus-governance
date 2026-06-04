@@ -28,9 +28,9 @@ export default function Header() {
       external: false,
     },
     {
-      name: 'GitBook',
-      href: 'https://zexus-governance.gitbook.io/whitepaper',
-      external: true,
+      name: 'Whitepaper',
+      href: '/whitepaper',
+      external: false,
     },
   ]
 

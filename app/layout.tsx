@@ -101,7 +101,7 @@ const ORGANIZATION_LD = {
     'https://x.com/ZexusGovernance',
     'https://t.me/+-BSQtI1uNNUwNTky',
     'https://discord.gg/SDUZMRP35J',
-    'https://zexus-governance.gitbook.io/whitepaper',
+    `${SITE_URL}/whitepaper`,
     'https://github.com/ZexusGovernance/zexus-governance',
   ],
 }

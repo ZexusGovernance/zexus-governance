@@ -108,9 +108,9 @@ function HomeContent() {
     Twitter: 'https://x.com/ZexusGovernance',
     Discord: 'https://discord.gg/SDUZMRP35J',
     Telegram: 'https://t.me/+-BSQtI1uNNUwNTky',
-    Docs: 'https://zexus-governance.gitbook.io/whitepaper',
-    Privacy: 'https://zexus-governance.gitbook.io/whitepaper/privacy-policy',
-    Terms: 'https://zexus-governance.gitbook.io/whitepaper/terms-of-service',
+    Docs: '/whitepaper',
+    Privacy: '/privacy',
+    Terms: '/terms',
   }
 
   // ─── Social constellation: 7 channel nodes orbiting the Zexus App core ──────
@@ -736,10 +736,9 @@ function HomeContent() {
                 <li>
                   <a
                     href={socialLinks.Docs}
-                    target="_blank"
                     className="hover:text-white transition-colors"
                   >
-                    Docs
+                    Whitepaper
                   </a>
                 </li>
               </ul>
