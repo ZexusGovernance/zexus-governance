@@ -399,6 +399,61 @@ const SECTIONS = [
     ],
   },
   {
+    id: 'test-phase',
+    title: 'Test Phase Report',
+    blocks: [
+      {
+        t: 'p',
+        text: 'Ahead of any public launch, Zexus ran a five-day test phase (June 5-10, 2026) with a curated, invite-only cohort of external testers on Base Mainnet. The objective was simple: prove that every core mechanic - community verdict voting, staking and rewards, Predict markets, Emergency Calls, and Telegram notifications - works end-to-end with real users under real conditions.',
+      },
+      {
+        t: 'callout',
+        text: 'All primary mechanics passed. The first community-verdict vote and the first Predict market each opened, ran, and resolved on schedule with live participants - the protocol\'s full loop executed in production, not a demo.',
+      },
+      { t: 'h3', text: 'Participation' },
+      {
+        t: 'table',
+        head: ['Metric', 'Result'],
+        rows: [
+          ['External testers', '8 (invite-only ZX access codes)'],
+          ['Active wallets with recorded activity', '20 (including the admin wallet)'],
+          ['Fake / batch wallets detected & excluded', '11'],
+        ],
+      },
+      {
+        t: 'p',
+        text: 'Sybil defenses behaved exactly as designed. The 48-hour account gate, the stake-to-vote requirement, and batch-pattern detection isolated 11 throwaway wallets - including two clusters created seconds apart - which were excluded from every metric. No farmed account reached the voting threshold.',
+      },
+      { t: 'h3', text: 'Mechanics validated' },
+      {
+        t: 'table',
+        head: ['Mechanic', 'Outcome'],
+        rows: [
+          ['Community verdict vote', 'Test-phase launch milestone submitted, voted, and resolved on schedule'],
+          ['Predict market', '"Will Zexus reach 10 stakers by June 9?" - opened, bet on, resolved No (8 stakers)'],
+          ['Emergency Call', 'Triggered under simulated conditions; full pool-to-verdict flow validated'],
+          ['Staking & rewards', 'APY accrual and ZXP grants distributed correctly'],
+          ['Telegram bot', 'Opt-in /start flow confirmed seamless by testers'],
+        ],
+      },
+      { t: 'h3', text: 'Issues found and fixed' },
+      {
+        t: 'list',
+        items: [
+          'Right-sidebar scroll breaking after a watchlist interaction - fixed.',
+          'Daily check-in button disappearing after day 2 - fixed.',
+          'Comment flicker on submit - fixed.',
+          'Staking page scroll on mobile - fixed.',
+          'ZXP balance not refreshing after a Predict bet - fixed.',
+        ],
+      },
+      {
+        t: 'p',
+        text: 'Early tester feedback averaged 7.5 / 10 overall (8.0 for UI, 7.3 for usability), with the Predict market singled out as a standout. Remaining open items - mobile polish, Telegram check-in reminders, and username display on profiles - are tracked for the public launch.',
+      },
+    ],
+  },
+  {
     id: 'roadmap',
     title: 'Roadmap',
     blocks: [
