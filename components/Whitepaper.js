@@ -400,11 +400,11 @@ const SECTIONS = [
   },
   {
     id: 'test-phase',
-    title: 'Test Phase Report',
+    title: 'Closed Test Phase Report',
     blocks: [
       {
         t: 'p',
-        text: 'Ahead of any public launch, Zexus ran a five-day test phase (June 5-10, 2026) with a curated, invite-only cohort of external testers on Base Mainnet. The objective was simple: prove that every core mechanic - community verdict voting, staking and rewards, Predict markets, Emergency Calls, and Telegram notifications - works end-to-end with real users under real conditions.',
+        text: 'Ahead of any public launch, Zexus ran a five-day closed test phase (June 5-10, 2026) - a deliberately small, invite-only cohort of hand-picked external testers on Base Mainnet. The objective was simple: prove that every core mechanic - community verdict voting, staking and rewards, Predict markets, Emergency Calls, and Telegram notifications - works end-to-end with real users under real conditions.',
       },
       {
         t: 'callout',
@@ -440,11 +440,11 @@ const SECTIONS = [
       {
         t: 'list',
         items: [
-          'Right-sidebar scroll breaking after a watchlist interaction - fixed.',
-          'Daily check-in button disappearing after day 2 - fixed.',
-          'Comment flicker on submit - fixed.',
-          'Staking page scroll on mobile - fixed.',
-          'ZXP balance not refreshing after a Predict bet - fixed.',
+          'Fixed the right-sidebar scroll.',
+          'Fixed the daily check-in button.',
+          'Fixed comment flicker on submit.',
+          'Fixed mobile scroll on the staking page.',
+          'Fixed ZXP balance refresh after a Predict bet.',
         ],
       },
       {
